@@ -1,5 +1,7 @@
 # SetHome
 
+Note: This project will no longer be maintained, as I don't play video games anymore. Have a good one, folks!
+
 ### Introduction
 Looking for a simple set-home plugin? One without permissions, maybe? Well, you've come to the right place! SetHome is a lightweight plugin designed to do a few things.
 
@@ -30,6 +32,6 @@ This plugin saves each player's home into its own file under the "plugins/SetHom
 - Support for command cancellation during move with warmups
 
 ### Support
-- If you need help, have any issues to report, or would like to request new features, please do so on the [GitHub Issues](https://github.com/DownThePark/SetHome/issues) page.
+- ~If you need help, have any issues to report, or would like to request new features, please do so on the [GitHub Issues](https://github.com/DownThePark/SetHome/issues) page.~
 - The latest version of SetHome is only intended to support the latest version of Minecraft at the time of its publication.
 - Multiple homes are not supported and are not currently planned for implementation.
