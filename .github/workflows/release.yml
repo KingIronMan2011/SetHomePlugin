@@ -40,6 +40,9 @@ jobs:
         env:
           VERSION: ${{ steps.get_version.outputs.version }}
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Build with Gradle
         if: steps.check_release.outputs.exists == 'false'
         run: ./gradlew build --no-daemon
