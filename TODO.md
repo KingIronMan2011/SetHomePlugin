@@ -7,4 +7,4 @@
 - [ ] Add localization/multi-language support
 - [x] Document all public methods and classes
 - [x] Add config migration for old settings
-- [ ] Add support for MySQL or other database storage
+- [x] Add support for MySQL or other database storage

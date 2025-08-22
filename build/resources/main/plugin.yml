@@ -1,5 +1,5 @@
 name: SetHome
-version: '6.3.8'
+version: '6.3.9'
 main: com.kingironman.sethome.SetHome
 api-version: '1.21'
 description: A lightweight SetHome plugin for Bukkit/Spigot
@@ -11,5 +11,5 @@ commands:
     description: Warp to your home
   deletehome:
     description: Delete your home
-  listHome:
+  listhome:
     description: List all your home

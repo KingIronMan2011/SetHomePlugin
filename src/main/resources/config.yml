@@ -20,8 +20,14 @@ extra:
   play-warp-sound: true
   respawn-at-home: true
   check-updates: true
-  storage-type: yaml
+  storage-type: yaml # yaml, sqlite or mysql
   max-homes-per-player: 3
+  mysql:
+    host: localhost
+    port: 3306
+    database: sethome
+    username: root
+    password: password
 
 messages:
   cmd-sethome: '&2[&a*&2] &aYou now have a new home, &6%player%&a!'
