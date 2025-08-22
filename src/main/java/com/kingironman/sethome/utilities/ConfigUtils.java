@@ -27,6 +27,7 @@ public class ConfigUtils {
     public boolean EXTRA_RESPAWN_AT_HOME;
     public boolean EXTRA_CHECK_UPDATES;
     public int MAX_HOMES_PER_PLAYER;
+    public String STORAGE_TYPE;
 
     // Settings for messages
     public String MESSAGE_CMD_SETHOME;
@@ -61,6 +62,7 @@ public class ConfigUtils {
         EXTRA_RESPAWN_AT_HOME = SetHome.getInstance().getConfig().getBoolean("extra-respawn-at-home");
         EXTRA_CHECK_UPDATES = SetHome.getInstance().getConfig().getBoolean("extra-check-updates");
         MAX_HOMES_PER_PLAYER = SetHome.getInstance().getConfig().getInt("max-homes-per-player", 0);
+        STORAGE_TYPE = SetHome.getInstance().getConfig().getString("storage-type", "yaml");
         MESSAGE_CMD_SETHOME = SetHome.getInstance().getConfig().getString("message-cmd-sethome");
         MESSAGE_CMD_HOME = SetHome.getInstance().getConfig().getString("message-cmd-home");
         MESSAGE_CMD_DELETEHOME = SetHome.getInstance().getConfig().getString("message-cmd-deletehome");

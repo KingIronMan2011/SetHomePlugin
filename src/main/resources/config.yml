@@ -23,6 +23,9 @@ extra-play-warp-sound: true
 extra-respawn-at-home: true
 extra-check-updates: true
 
+# Storage type: yaml or sqlite
+storage-type: yaml
+
 # Maximum number of homes per player (set to 0 for unlimited)
 max-homes-per-player: 3
 

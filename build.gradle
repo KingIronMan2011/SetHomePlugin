@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.kingironman'
-version = '6.3.5'
+version = '6.3.7'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -24,6 +24,7 @@ repositories {
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.21.8-R0.1-SNAPSHOT'
+    implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
 }
 
 processResources {
@@ -39,5 +40,5 @@ processResources {
 
 jar {
     archiveBaseName.set('SetHome')
-    archiveVersion.set('6.3.5')
+    archiveVersion.set('6.3.7')
 }
