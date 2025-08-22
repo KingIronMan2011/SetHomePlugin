@@ -32,6 +32,9 @@ processResources {
         include '**/*'
         filteringCharset = 'UTF-8'
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        filesMatching('plugin.yml') {
+            expand(project.properties)
+        }
     }
 }
 
