@@ -57,6 +57,7 @@ public class SetHome extends JavaPlugin {
         getCommand("sethome").setExecutor(new CommandExecutor());
         getCommand("home").setExecutor(new CommandExecutor());
         getCommand("deletehome").setExecutor(new CommandExecutor());
+        getCommand("listhome").setExecutor(new CommandExecutor());
 
         // Register events
         getServer().getPluginManager().registerEvents(new EventMove(), this);
@@ -70,6 +71,7 @@ public class SetHome extends JavaPlugin {
         getCommand("sethome").setExecutor(null);
         getCommand("home").setExecutor(null);
         getCommand("deletehome").setExecutor(null);
+        getCommand("listhome").setExecutor(null);
 
         // Unregister events
         PlayerMoveEvent.getHandlerList().unregister(this);

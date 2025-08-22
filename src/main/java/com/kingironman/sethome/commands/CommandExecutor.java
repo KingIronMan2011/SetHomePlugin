@@ -16,7 +16,8 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
     public enum COMMAND_TYPE {
         SETHOME,
         HOME,
-        DELETEHOME
+        DELETEHOME,
+        LISTHOME
     }
 
     private HashMap<COMMAND_TYPE, Integer> cooldownTime;
@@ -39,9 +40,11 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
         cooldownTime.put(COMMAND_TYPE.SETHOME, SetHome.getInstance().configUtils.CMD_SETHOME_COOLDOWN);
         cooldownTime.put(COMMAND_TYPE.HOME, SetHome.getInstance().configUtils.CMD_HOME_COOLDOWN);
         cooldownTime.put(COMMAND_TYPE.DELETEHOME, SetHome.getInstance().configUtils.CMD_DELETEHOME_COOLDOWN);
+        cooldownTime.put(COMMAND_TYPE.LISTHOME, 0);
         warmupTime.put(COMMAND_TYPE.SETHOME, SetHome.getInstance().configUtils.CMD_SETHOME_WARMUP);
         warmupTime.put(COMMAND_TYPE.HOME, SetHome.getInstance().configUtils.CMD_HOME_WARMUP);
         warmupTime.put(COMMAND_TYPE.DELETEHOME, SetHome.getInstance().configUtils.CMD_DELETEHOME_WARMUP);
+        warmupTime.put(COMMAND_TYPE.LISTHOME, 0);
     }
 
     public static HashMap<UUID, HashMap<COMMAND_TYPE, Long>> getCooldownTask() {
@@ -56,13 +59,20 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
         return warmupTask;
     }
 
-    public void executeCmd(Player player, COMMAND_TYPE commandType) {
-        if (commandType == COMMAND_TYPE.SETHOME)
-            SetHome.getInstance().commands.cmdSetHome(player);
-        else if (commandType == COMMAND_TYPE.HOME)
-            SetHome.getInstance().commands.cmdHome(player);
-        else if (commandType == COMMAND_TYPE.DELETEHOME)
-            SetHome.getInstance().commands.cmdDeleteHome(player);
+    public void executeCmd(Player player, COMMAND_TYPE commandType, String[] commandArgs) {
+        String homeName = "main";
+        if (commandArgs.length > 0){
+            homeName = commandArgs[0];
+        }
+        if (commandType == COMMAND_TYPE.SETHOME){
+            SetHome.getInstance().commands.cmdSetHome(player, homeName);
+        } else if (commandType == COMMAND_TYPE.HOME){
+            SetHome.getInstance().commands.cmdHome(player, homeName);
+        } else if (commandType == COMMAND_TYPE.DELETEHOME) {
+            SetHome.getInstance().commands.cmdDeleteHome(player, homeName);
+        } else if (commandType == COMMAND_TYPE.LISTHOME){
+            SetHome.getInstance().commands.cmdListHome(player);
+        }
     }
 
     public boolean executeCooldown(Player player, COMMAND_TYPE commandType, int seconds) {
@@ -81,12 +91,12 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
         return false;
     }
 
-    public void executeWarmup(Player player, COMMAND_TYPE commandType, int seconds) {
+    public void executeWarmup(Player player, String[] commandArgs, COMMAND_TYPE commandType, int seconds) {
         SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.WARMUP, seconds);
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                executeCmd(player, commandType);
+                executeCmd(player, commandType, commandArgs);
                 warmupInEffect.get(player.getUniqueId()).put(commandType, false);
             }
         };
@@ -117,6 +127,8 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
         }
         else if (command.getName().equals("deletehome")) {
             commandType = COMMAND_TYPE.DELETEHOME;
+        } else {
+            commandType = COMMAND_TYPE.LISTHOME;
         }
 
         int cooldownSeconds = cooldownTime.get(commandType);
@@ -126,22 +138,22 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
             boolean running = executeCooldown(player, commandType, cooldownSeconds);
             if (running)
                 return false;
-            executeWarmup(player, commandType, warmupSeconds);
+            executeWarmup(player, args, commandType, warmupSeconds);
         }
         // Just cooldown enabled
         else if (cooldownSeconds > 0) {
             boolean running = executeCooldown(player, commandType, cooldownSeconds);
             if (running)
                 return false;
-            executeCmd(player, commandType);
+            executeCmd(player, commandType, args);
         }
         // Just warmup enabled
         else if (warmupSeconds > 0) {
-            executeWarmup(player, commandType, warmupSeconds);
+            executeWarmup(player, args, commandType, warmupSeconds);
         }
         // Both cooldown and warmup disabled
         else {
-            executeCmd(player, commandType);
+            executeCmd(player, commandType, args);
         }
 
         return false;

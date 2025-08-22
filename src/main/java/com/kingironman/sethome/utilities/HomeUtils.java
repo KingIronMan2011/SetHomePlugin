@@ -2,6 +2,7 @@ package com.kingironman.sethome.utilities;
 
 import com.kingironman.sethome.SetHome;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,9 +12,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
+
+import static org.bukkit.Bukkit.getLogger;
 
 public class HomeUtils {
 
@@ -27,7 +29,7 @@ public class HomeUtils {
     public final String PATH_YAW = "Homes.main.Yaw";
     public final String PATH_PITCH = "Homes.main.Pitch";
     public final String PATH_WORLD = "Homes.main.World";
-    
+
     public HomeUtils() {
         homesFilePath = SetHome.getInstance().getDataFolder() + File.separator + "homes";
         homeFiles = new HashMap<>();
@@ -43,6 +45,25 @@ public class HomeUtils {
 
     }
 
+    private String getXPath(String homeName){
+        return "Homes."+ homeName +".X";
+    }
+    private String getYPath(String homeName){
+        return "Homes."+ homeName +".Y";
+    }
+    private String getZPath(String homeName){
+        return "Homes."+ homeName +".Z";
+    }
+    private String getYawXPath(String homeName){
+        return "Homes."+ homeName +".Yaw";
+    }
+    private String getPitchXPath(String homeName){
+        return "Homes."+ homeName +".Pitch";
+    }
+    private String getWorldXPath(String homeName){
+        return "Homes."+ homeName +".World";
+    }
+
     public HashMap<UUID, File> getHomeFiles() {
         return homeFiles;
     }
@@ -51,13 +72,13 @@ public class HomeUtils {
         return homeYamls;
     }
 
-    public boolean homeExists(Player player, boolean verbose) {
-        if (getHomeYaml(player).getString(PATH_WORLD) == null) {
+    public boolean homeExists(Player player, String homeName, boolean verbose) {
+        if (getHomeYaml(player).getString(getWorldXPath(homeName)) == null) {
             if (verbose)
                 SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.MISSING_HOME, null);
             return false;
         }
-        if (Bukkit.getWorld(getHomeYaml(player).getString(PATH_WORLD)) == null) {
+        if (Bukkit.getWorld(getHomeYaml(player).getString(getWorldXPath(homeName))) == null) {
             if (verbose)
                 SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.MISSING_WORLD, null);
             return false;
@@ -65,47 +86,77 @@ public class HomeUtils {
         return true;
     }
 
-    public void setPlayerHome(Player player) {
-        getHomeYaml(player).set(PATH_X, player.getLocation().getX());
-        getHomeYaml(player).set(PATH_Y, player.getLocation().getY());
-        getHomeYaml(player).set(PATH_Z, player.getLocation().getZ());
-        getHomeYaml(player).set(PATH_YAW, player.getLocation().getYaw());
-        getHomeYaml(player).set(PATH_PITCH, player.getLocation().getPitch());
-        getHomeYaml(player).set(PATH_WORLD, player.getLocation().getWorld().getName());
+    public void setPlayerHome(Player player, String homeName) {
+        getHomeYaml(player).set(getXPath(homeName), player.getLocation().getX());
+        getHomeYaml(player).set(getYPath(homeName), player.getLocation().getY());
+        getHomeYaml(player).set(getZPath(homeName), player.getLocation().getZ());
+        getHomeYaml(player).set(getYawXPath(homeName), player.getLocation().getYaw());
+        getHomeYaml(player).set(getPitchXPath(homeName), player.getLocation().getPitch());
+        getHomeYaml(player).set(getWorldXPath(homeName), player.getLocation().getWorld().getName());
         saveHomesFile(player);
         if (SetHome.getInstance().configUtils.CMD_SETHOME_MESSAGE_SHOW)
             SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_SETHOME, null);
     }
 
-    public Location getPlayerHome(Player player) {
+    public Location getPlayerHome(Player player, String homeName) {
         return new Location(
-                Bukkit.getWorld(getHomeYaml(player).getString(PATH_WORLD)),
-                getHomeYaml(player).getDouble(PATH_X),
-                getHomeYaml(player).getDouble(PATH_Y),
-                getHomeYaml(player).getDouble(PATH_Z),
-                getHomeYaml(player).getLong(PATH_YAW),
-                getHomeYaml(player).getLong(PATH_PITCH)
+                Bukkit.getWorld(getHomeYaml(player).getString(getWorldXPath(homeName))),
+                getHomeYaml(player).getDouble(getXPath(homeName)),
+                getHomeYaml(player).getDouble(getYPath(homeName)),
+                getHomeYaml(player).getDouble(getZPath(homeName)),
+                getHomeYaml(player).getLong(getYawXPath(homeName)),
+                getHomeYaml(player).getLong(getPitchXPath(homeName))
         );
     }
 
-    public void sendPlayerHome(Player player) {
-        if (!homeExists(player, true)) return;
-        Location home = getPlayerHome(player);
+    public void sendPlayerHome(Player player, String homeName) {
+        if (!homeExists(player, homeName, true)) return;
+        Location home = getPlayerHome(player, homeName);
         player.teleport(home);
         if (SetHome.getInstance().configUtils.CMD_HOME_MESSAGE_SHOW)
             SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_HOME, null);
         if (SetHome.getInstance().configUtils.EXTRA_PLAY_WARP_SOUND)
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
     }
+    public List<String> getHomeNames(Player player) {
+        YamlConfiguration config = getHomeYaml(player); // Assuming this loads the YAML for the player
+        List<String> homeNames = new ArrayList<>();
 
-    public void deletePlayerHome(Player player) {
-        if (!homeExists(player, true)) return;
-        getHomeYaml(player).set(PATH_X, null);
-        getHomeYaml(player).set(PATH_Y, null);
-        getHomeYaml(player).set(PATH_Z, null);
-        getHomeYaml(player).set(PATH_YAW, null);
-        getHomeYaml(player).set(PATH_PITCH, null);
-        getHomeYaml(player).set(PATH_WORLD, null);
+        // Debugging output to ensure YAML is loaded correctly
+        if (config == null) {
+            getLogger().warning("Configuration is null for player: " + player.getName());
+            return Collections.emptyList();
+        }
+
+        if (config.contains("Homes")) {
+            // Debugging output to see if the "Homes" section is accessible
+            getLogger().info("Homes section exists for player: " + player.getName());
+            homeNames.addAll(config.getConfigurationSection("Homes").getKeys(false));
+        } else {
+            getLogger().warning("No homes found in the configuration for player: " + player.getName());
+        }
+
+        return homeNames.isEmpty() ? Collections.emptyList() : homeNames;
+    }
+
+    public void listHome(Player player){
+        List<String> homeNames = getHomeNames(player);
+        if (homeNames.isEmpty()) {
+            player.sendMessage(ChatColor.RED + "You have no homes set.");
+        } else {
+            player.sendMessage(ChatColor.GREEN + "Your homes: " + ChatColor.YELLOW + String.join(", ", homeNames));
+        }
+    }
+
+    public void deletePlayerHome(Player player, String homeName) {
+        if (!homeExists(player, homeName, true)) return;
+        getHomeYaml(player).set(getXPath(homeName), null);
+        getHomeYaml(player).set(getYPath(homeName), null);
+        getHomeYaml(player).set(getZPath(homeName), null);
+        getHomeYaml(player).set(getYawXPath(homeName), null);
+        getHomeYaml(player).set(getPitchXPath(homeName), null);
+        getHomeYaml(player).set(getWorldXPath(homeName), null);
+        getHomeYaml(player).set("Homes."+homeName, null);
         saveHomesFile(player);
         if (SetHome.getInstance().configUtils.CMD_DELETEHOME_MESSAGE_SHOW)
             SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_DELETEHOME, null);

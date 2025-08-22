@@ -50,7 +50,7 @@ public class MessageUtils {
         }
     }
 
-    private String formatMessage(String message, String playerName, Optional<Integer> seconds) {
+    public static String formatMessage(String message, String playerName, Optional<Integer> seconds) {
         String formatted;
 
         if (seconds.isPresent()) {
