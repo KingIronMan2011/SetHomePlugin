@@ -10,6 +10,7 @@ import com.kingironman.sethome.converters.HomesV61ToV62;
 import com.kingironman.sethome.events.EventMove;
 import com.kingironman.sethome.events.EventQuit;
 import com.kingironman.sethome.events.EventRespawn;
+import com.kingironman.sethome.metrics.MetricsHandler;
 import com.kingironman.sethome.utilities.ConfigUtils;
 import com.kingironman.sethome.utilities.HomeUtils;
 import com.kingironman.sethome.utilities.MessageUtils;
@@ -19,6 +20,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SetHome extends JavaPlugin {
+    private MetricsHandler metricsHandler;
 
     private static SetHome instance;
 
@@ -56,6 +58,8 @@ public class SetHome extends JavaPlugin {
         configV5ToV6 = new ConfigV5ToV6();
         homesV5ToV6 = new HomesV5ToV6();
         homesV61ToV62 = new HomesV61ToV62();
+
+    metricsHandler = new MetricsHandler(this, 27015);
 
     // Register commands and tab completers
     CommandExecutor executor = new CommandExecutor();
