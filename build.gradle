@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'com.kingironman'
-version = '6.4.0'
+version = '6.4.1'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -42,5 +43,13 @@ processResources {
 
 jar {
     archiveBaseName.set('SetHome')
-    archiveVersion.set('6.4.0')
+    archiveVersion.set('6.4.1')
 }
+
+shadowJar {
+    archiveBaseName.set('SetHome')
+    archiveVersion.set('6.4.1')
+    archiveClassifier.set('')
+}
+
+build.dependsOn shadowJar
