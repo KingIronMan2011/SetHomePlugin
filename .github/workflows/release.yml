@@ -54,4 +54,4 @@ jobs:
           tag_name: v${{ steps.get_version.outputs.version }}
           name: Release ${{ steps.get_version.outputs.version }}
           generate_release_notes: true
-          files: build/libs/*.jar
+          files: build/libs/SetHome-${{ steps.get_version.outputs.version }}.jar
