@@ -20,7 +20,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SetHome extends JavaPlugin {
-    private MetricsHandler metricsHandler;
+    @SuppressWarnings("unused")
+	private MetricsHandler metricsHandler;
 
     private static SetHome instance;
 

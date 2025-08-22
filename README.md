@@ -7,6 +7,8 @@
 
 SetHome is a lightweight, modern Minecraft plugin for Spigot servers that lets players set, teleport to, delete, and list their homes. It is highly configurable, supports multiple storage backends, and is designed for ease of use and server performance.
 
+**Java 17 Required:** This plugin requires Java 17 or newer to build and run. Make sure your server and build environment use Java 17.
+
 ---
 
 ## ✨ Features
@@ -23,6 +25,7 @@ SetHome is a lightweight, modern Minecraft plugin for Spigot servers that lets p
 - Console notifications for plugin updates
 - Automatic config migration/updating
 - No permissions required by default (easy for all players)
+- Integrated with [bStats](https://bstats.org/) for anonymous plugin usage metrics
 
 ---
 
@@ -60,6 +63,12 @@ extra:
 | /home        | Teleport to your home      |
 | /deletehome  | Delete your home           |
 | /listhome    | List all your homes        |
+
+---
+
+## 📊 Metrics & bStats
+
+This plugin uses [bStats](https://bstats.org/) to collect anonymous usage statistics. These metrics help the developer understand plugin usage and improve future updates. You can opt out at any time by editing the `plugins/bStats/config.yml` file on your server.
 
 ---
 
