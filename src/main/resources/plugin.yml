@@ -1,6 +1,6 @@
 name: SetHome
 version: '${project.version}'
-main: com.downthepark.sethome.SetHome
+main: com.kingironman.sethome.SetHome
 api-version: '1.21'
 description: A lightweight SetHome plugin for Bukkit/Spigot
 author: KingIronMan2011
