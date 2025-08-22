@@ -72,4 +72,4 @@ extra:
 
 ## 📋 License & Credits
 
-Created by KingIronMan2011. See LICENSE for details.
+Created by KingIronMan2011. See [LICENSE](/LICENSE.md) for details.
