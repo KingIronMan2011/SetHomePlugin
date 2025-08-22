@@ -41,8 +41,11 @@ public class SetHome extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Copy default config
-        saveDefaultConfig();
+
+    // Copy default config if missing
+    saveDefaultConfig();
+    // Update config with new options (preserve user settings)
+    new ConfigManipulation().updateConfigWithDefaults();
 
         // Initialize objects
         configUtils = new ConfigUtils();

@@ -17,6 +17,10 @@ import java.util.logging.Level;
 
 import static org.bukkit.Bukkit.getLogger;
 
+/**
+ * Utility class for managing player homes (set, get, list, delete) using YAML files.
+ * Handles home data storage, retrieval, and validation for the SetHome plugin.
+ */
 public class HomeUtils {
 
     private final String homesFilePath;
@@ -64,14 +68,29 @@ public class HomeUtils {
         return "Homes."+ homeName +".World";
     }
 
+    /**
+     * Get the map of player UUIDs to their home YAML files.
+     * @return HashMap of UUID to File
+     */
     public HashMap<UUID, File> getHomeFiles() {
         return homeFiles;
     }
 
+    /**
+     * Get the map of player UUIDs to their loaded YAML configurations.
+     * @return HashMap of UUID to YamlConfiguration
+     */
     public HashMap<UUID, YamlConfiguration> getHomeYamls() {
         return homeYamls;
     }
 
+    /**
+     * Check if a home exists for a player and if the world is valid.
+     * @param player The player
+     * @param homeName The home name
+     * @param verbose If true, send error messages to the player
+     * @return true if the home exists and world is valid, false otherwise
+     */
     public boolean homeExists(Player player, String homeName, boolean verbose) {
         if (getHomeYaml(player).getString(getWorldXPath(homeName)) == null) {
             if (verbose)
@@ -86,6 +105,11 @@ public class HomeUtils {
         return true;
     }
 
+    /**
+     * Set or update a player's home location. Enforces max homes per player.
+     * @param player The player
+     * @param homeName The home name
+     */
     public void setPlayerHome(Player player, String homeName) {
         int maxHomes = SetHome.getInstance().configUtils.MAX_HOMES_PER_PLAYER;
         List<String> homeNames = getHomeNames(player);
@@ -104,6 +128,12 @@ public class HomeUtils {
             SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_SETHOME, null);
     }
 
+    /**
+     * Get the Location object for a player's home.
+     * @param player The player
+     * @param homeName The home name
+     * @return Location of the home
+     */
     public Location getPlayerHome(Player player, String homeName) {
         return new Location(
                 Bukkit.getWorld(getHomeYaml(player).getString(getWorldXPath(homeName))),
@@ -115,6 +145,11 @@ public class HomeUtils {
         );
     }
 
+    /**
+     * Teleport a player to their home, with optional message and sound.
+     * @param player The player
+     * @param homeName The home name
+     */
     public void sendPlayerHome(Player player, String homeName) {
         if (!homeExists(player, homeName, true)) return;
         Location home = getPlayerHome(player, homeName);
@@ -124,6 +159,11 @@ public class HomeUtils {
         if (SetHome.getInstance().configUtils.EXTRA_PLAY_WARP_SOUND)
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
     }
+    /**
+     * Get a list of all home names for a player.
+     * @param player The player
+     * @return List of home names
+     */
     public List<String> getHomeNames(Player player) {
         YamlConfiguration config = getHomeYaml(player); // Assuming this loads the YAML for the player
         List<String> homeNames = new ArrayList<>();
@@ -145,6 +185,10 @@ public class HomeUtils {
         return homeNames.isEmpty() ? Collections.emptyList() : homeNames;
     }
 
+    /**
+     * Send a message to the player listing all their homes.
+     * @param player The player
+     */
     public void listHome(Player player){
         List<String> homeNames = getHomeNames(player);
         if (homeNames.isEmpty()) {
@@ -154,6 +198,11 @@ public class HomeUtils {
         }
     }
 
+    /**
+     * Delete a player's home by name.
+     * @param player The player
+     * @param homeName The home name
+     */
     public void deletePlayerHome(Player player, String homeName) {
         if (!homeExists(player, homeName, true)) return;
         getHomeYaml(player).set(getXPath(homeName), null);
