@@ -2,6 +2,7 @@
 /target
 /.gradle
 /.settings
+/.vscode
 /gradle
 /out
 /bin
