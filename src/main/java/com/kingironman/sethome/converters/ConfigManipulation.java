@@ -55,16 +55,32 @@ public class ConfigManipulation {
         FileConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defStream));
 
         boolean changed = false;
-        for (String key : defaultConfig.getKeys(true)) {
-            if (!userConfig.contains(key)) {
-                userConfig.set(key, defaultConfig.get(key));
+        // Iterate only top-level sections (sethome, home, deletehome, extra, messages)
+        for (String section : defaultConfig.getKeys(false)) {
+            if (!userConfig.contains(section)) {
+                // If the whole section is missing, add it
+                userConfig.set(section, defaultConfig.get(section));
                 changed = true;
+                continue;
+            }
+            // Section exists, check for missing keys inside
+            Object defSectionObj = defaultConfig.get(section);
+            Object userSectionObj = userConfig.get(section);
+            if (defSectionObj instanceof org.bukkit.configuration.ConfigurationSection && userSectionObj instanceof org.bukkit.configuration.ConfigurationSection) {
+                org.bukkit.configuration.ConfigurationSection defSection = (org.bukkit.configuration.ConfigurationSection) defSectionObj;
+                org.bukkit.configuration.ConfigurationSection userSection = (org.bukkit.configuration.ConfigurationSection) userSectionObj;
+                for (String key : defSection.getKeys(false)) {
+                    if (!userSection.contains(key)) {
+                        userSection.set(key, defSection.get(key));
+                        changed = true;
+                    }
+                }
             }
         }
         if (changed) {
             try {
                 userConfig.save(configFile);
-                SetHome.getInstance().getLogger().info("Config updated with new options. Your settings are preserved.");
+                SetHome.getInstance().getLogger().info("Config updated with new options in correct sections. Your settings are preserved.");
             } catch (Exception e) {
                 SetHome.getInstance().getLogger().warning("Failed to update config: " + e.getMessage());
             }
