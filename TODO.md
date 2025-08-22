@@ -7,3 +7,15 @@
 - [x] Document all public methods and classes
 - [x] Add config migration for old settings
 - [x] Add support for MySQL or other database storage
+- [ ] Add home invite/teleport-to-other-player’s home feature
+- [ ] Add backup and restore for home data
+- [ ] Add metrics/usage statistics (bStats integration)
+- [ ] Add configurable command aliases
+- [ ] Add in-game admin commands for managing other players’ homes
+- [ ] Add support for home descriptions or notes
+- [ ] Add configurable limits per permission group (e.g., VIPs get more homes)
+- [ ] Add API for other plugins to interact with SetHome
+- [ ] Add web-based or GUI home management (e.g., via a web panel or map)
+- [ ] Add migration/import from other home plugins
+- [ ] Add more robust error handling and logging
+- [ ] Add integration tests and more unit tests
