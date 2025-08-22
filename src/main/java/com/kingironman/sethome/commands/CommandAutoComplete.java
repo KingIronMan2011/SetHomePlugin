@@ -23,7 +23,7 @@ public class CommandAutoComplete implements TabCompleter {
 		// Only suggest home names for the first argument
 		if (args.length == 1) {
 			List<String> homeNames = SetHome.getInstance().homeUtils.getHomeNames(player);
-			if (cmd.equals("sethome") || cmd.equals("home") || cmd.equals("deletehome") || cmd.equals("listhome")) {
+			if (cmd.equals("home") || cmd.equals("deletehome")) {
 				// Filter by what the user has started typing
 				String prefix = args[0].toLowerCase();
 				List<String> suggestions = new ArrayList<>();

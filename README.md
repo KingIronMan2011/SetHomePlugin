@@ -39,6 +39,7 @@ This plugin saves each player's homes into its own file under the "plugins/SetHo
 - Support for cooldowns and warmups
 - Support for command cancellation during move with warmups
 - Support for multiple homes
+- Autocompletion for commands
 
 ### Support
 
