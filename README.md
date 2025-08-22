@@ -1,50 +1,75 @@
-# SetHome
 
-Note: ~This project will no longer be maintained, as I don't play video games anymore. Have a good one, folks!~ Me(KingIronMan2011) will maybe sometimes update this plugin, but I won't promise anything.
+# SetHome Plugin
 
-## Introduction
+![SetHome Screenshot](https://i.imgur.com/GK3eEFD.png)
 
-Looking for a simple set-home plugin? One without permissions, maybe? Well, you've come to the right place! SetHome is a lightweight plugin designed to do a few things.
+## About
 
-SetHome allows your players to:
+SetHome is a lightweight, modern Minecraft plugin for Spigot servers that lets players set, teleport to, delete, and list their homes. It is highly configurable, supports multiple storage backends, and is designed for ease of use and server performance.
 
-- Set homes for themselves.
-- Go to their home.
-- Delete their home.
-- List their home.
+---
 
-This plugin saves each player's homes into its own file under the "plugins/SetHome/homes" folder.
+## ✨ Features
 
-### Screenshots
+- Set, teleport to, delete, and list named homes
+- Per-player home files or database storage (YAML, SQLite, or MySQL)
+- Configurable maximum number of homes per player
+- Cooldowns and warmups for commands
+- Cancel teleport on player movement (warmup)
+- Respawn at home on death (optional)
+- Enderman warp sound on teleport (optional)
+- Fully customizable messages (config.yml)
+- Autocompletion for all commands
+- Console notifications for plugin updates
+- Automatic config migration/updating
+- No permissions required by default (easy for all players)
 
-![Screenshot](https://i.imgur.com/GK3eEFD.png)
+---
 
-### Commands
+## ⚙️ Configuration Highlights
 
-- /sethome
-- /home
-- /deletehome
-- /listhome
+All options are in `config.yml`. Example:
 
-### Permissions
+```yaml
+extra:
+ storage-type: yaml # yaml, sqlite, or mysql
+ max-homes-per-player: 3
+ mysql:
+  host: localhost
+  port: 3306
+  database: sethome
+  username: root
+  password: password
+```
 
-- None required
+---
 
-### Extra Features (config.yml)
+## 🗂️ Storage Backends
 
-- Players are respawned to their home on death
-- An Enderman warp sound is played upon teleportation
-- 100% customizable in-game messages
-- Console notification for new updates
-- Support for cooldowns and warmups
-- Support for command cancellation during move with warmups
-- Support for multiple homes
-- Support for Autocompletion for commands
-- Support for Configurable maximum number of homes per player
-- Support for teleport cooldown/warmup cancellation on player movement
-- Support for SQLite database storage
+- **YAML** (default): Each player's homes are stored in a separate file in `plugins/SetHome/homes/`.
+- **SQLite**: Homes are stored in a local SQLite database file.
+- **MySQL**: Homes are stored in a remote or local MySQL database (see config example above).
 
-### Support
+---
 
-- If you need help, have any issues to report, or would like to request new features, please do so on the [GitHub Issues](https://github.com/KingIronMan2011/SetHomePlugin/issues) page.
-- The latest version of SetHome is only intended to support the latest version of Minecraft at the time of its publication.
+## 📝 Commands
+
+| Command      | Description                |
+| ------------ | -------------------------- |
+| /sethome     | Set your home              |
+| /home        | Teleport to your home      |
+| /deletehome  | Delete your home           |
+| /listhome    | List all your homes        |
+
+---
+
+## 🛠️ Support & Issues
+
+- For help, bug reports, or feature requests, use the [GitHub Issues](https://github.com/KingIronMan2011/SetHomePlugin/issues) page.
+- The latest version is intended for the latest Minecraft/Spigot release.
+
+---
+
+## 📋 License & Credits
+
+Created by KingIronMan2011. See LICENSE for details.
