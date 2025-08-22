@@ -87,6 +87,12 @@ public class HomeUtils {
     }
 
     public void setPlayerHome(Player player, String homeName) {
+        int maxHomes = SetHome.getInstance().configUtils.MAX_HOMES_PER_PLAYER;
+        List<String> homeNames = getHomeNames(player);
+        if (maxHomes > 0 && !homeNames.contains(homeName) && homeNames.size() >= maxHomes) {
+            player.sendMessage(ChatColor.RED + "You have reached the maximum number of homes (" + maxHomes + "). Delete a home before setting a new one.");
+            return;
+        }
         getHomeYaml(player).set(getXPath(homeName), player.getLocation().getX());
         getHomeYaml(player).set(getYPath(homeName), player.getLocation().getY());
         getHomeYaml(player).set(getZPath(homeName), player.getLocation().getZ());

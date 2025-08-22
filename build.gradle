@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.kingironman'
-version = '6.3.4'
+version = '6.3.5'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -39,5 +39,5 @@ processResources {
 
 jar {
     archiveBaseName.set('SetHome')
-    archiveVersion.set('6.3.4')
+    archiveVersion.set('6.3.5')
 }
