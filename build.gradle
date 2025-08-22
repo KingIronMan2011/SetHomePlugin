@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.kingironman'
-version = '6.3.1'
+version = '6.3.2'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -40,11 +40,11 @@ processResources {
 
 jar {
     archiveBaseName.set('SetHome')
-    archiveVersion.set('6.3.1')
+    archiveVersion.set('6.3.2')
 }
 
 shadowJar {
     archiveBaseName.set('SetHome')
-    archiveVersion.set('6.3.1')
+    archiveVersion.set('6.3.2')
     archiveClassifier.set('')
 }
