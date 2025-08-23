@@ -15,4 +15,4 @@
 - [ ] Add API for other plugins to interact with SetHome
 - [ ] Add web-based or GUI home management (e.g., via a web panel or map)
 - [ ] Add migration/import from other home plugins
-- [ ] Add more robust error handling and logging
+- [x] Add more robust error handling and logging
