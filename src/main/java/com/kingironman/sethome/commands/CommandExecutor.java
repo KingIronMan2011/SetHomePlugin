@@ -2,6 +2,7 @@ package com.kingironman.sethome.commands;
 
 import com.kingironman.sethome.SetHome;
 import com.kingironman.sethome.utilities.MessageUtils;
+import com.kingironman.sethome.utilities.LoggingUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -64,14 +65,19 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
         if (commandArgs.length > 0){
             homeName = commandArgs[0];
         }
-        if (commandType == COMMAND_TYPE.SETHOME){
-            SetHome.getInstance().commands.cmdSetHome(player, homeName);
-        } else if (commandType == COMMAND_TYPE.HOME){
-            SetHome.getInstance().commands.cmdHome(player, homeName);
-        } else if (commandType == COMMAND_TYPE.DELETEHOME) {
-            SetHome.getInstance().commands.cmdDeleteHome(player, homeName);
-        } else if (commandType == COMMAND_TYPE.LISTHOME){
-            SetHome.getInstance().commands.cmdListHome(player);
+        try {
+            if (commandType == COMMAND_TYPE.SETHOME){
+                SetHome.getInstance().commands.cmdSetHome(player, homeName);
+            } else if (commandType == COMMAND_TYPE.HOME){
+                SetHome.getInstance().commands.cmdHome(player, homeName);
+            } else if (commandType == COMMAND_TYPE.DELETEHOME) {
+                SetHome.getInstance().commands.cmdDeleteHome(player, homeName);
+            } else if (commandType == COMMAND_TYPE.LISTHOME){
+                SetHome.getInstance().commands.cmdListHome(player);
+            }
+        } catch (Exception e) {
+            com.kingironman.sethome.utilities.LoggingUtils.error("Error executing command: " + commandType, e);
+            player.sendMessage("\u00a7cAn internal error occurred while executing the command. See server logs.");
         }
     }
 
@@ -131,10 +137,11 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
             commandType = COMMAND_TYPE.LISTHOME;
         }
 
-        int cooldownSeconds = cooldownTime.get(commandType);
+    int cooldownSeconds = cooldownTime.get(commandType);
         int warmupSeconds = warmupTime.get(commandType);
         // Both cooldown and warmup enabled
-        if (cooldownSeconds > 0 && warmupSeconds > 0) {
+    try {
+    if (cooldownSeconds > 0 && warmupSeconds > 0) {
             boolean running = executeCooldown(player, commandType, cooldownSeconds);
             if (running)
                 return false;
@@ -155,7 +162,11 @@ public class CommandExecutor implements org.bukkit.command.CommandExecutor {
         else {
             executeCmd(player, commandType, args);
         }
-
+        } catch (Exception e) {
+            LoggingUtils.error("Unhandled error in command execution", e);
+            player.sendMessage("\u00a7cAn internal error occurred. See server logs.");
+            return true;
+        }
         return false;
     }
 

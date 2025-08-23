@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.logging.Level;
 
 import static org.bukkit.Bukkit.getLogger;
 
@@ -47,7 +46,7 @@ public class HomeUtils {
             try {
                 Files.createDirectories(Paths.get(homesFilePath));
             } catch (IOException e) {
-                // Do nothing
+                LoggingUtils.error("Failed to create homes directory: " + homesFilePath, e);
             }
         }
         if (storageType.equalsIgnoreCase("sqlite")) {
@@ -55,7 +54,7 @@ public class HomeUtils {
             try {
                 sqliteUtils.setupTables();
             } catch (Exception e) {
-                getLogger().severe("Failed to setup SQLite tables: " + e.getMessage());
+                LoggingUtils.error("Failed to setup SQLite tables", e);
             }
             mysqlUtils = null;
         } else if (storageType.equalsIgnoreCase("mysql")) {
@@ -69,7 +68,7 @@ public class HomeUtils {
             try {
                 mysqlUtils.setupTables();
             } catch (Exception e) {
-                getLogger().severe("Failed to setup MySQL tables: " + e.getMessage());
+                LoggingUtils.error("Failed to setup MySQL tables", e);
             }
         } else {
             sqliteUtils = null;
@@ -639,8 +638,7 @@ public class HomeUtils {
         try {
             getHomeYaml(player).save(getHomeFile(player));
         } catch (Exception e) {
-            SetHome.getInstance().getLogger().log(Level.SEVERE, "Error saving home for " + player.getName() + "!");
-            e.printStackTrace();
+            LoggingUtils.error("Error saving home for " + player.getName(), e);
         }
     }
 
@@ -653,6 +651,7 @@ public class HomeUtils {
                 homeFiles.get(player.getUniqueId()).createNewFile();
             }
             catch (IOException e) {
+                LoggingUtils.error("Failed to create home file for " + player.getName(), e);
                 throw new RuntimeException(e);
             }
         }

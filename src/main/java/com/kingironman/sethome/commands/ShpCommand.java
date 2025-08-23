@@ -2,6 +2,7 @@ package com.kingironman.sethome.commands;
 
 import com.kingironman.sethome.SetHome;
 import com.kingironman.sethome.utilities.BackupUtils;
+import com.kingironman.sethome.utilities.LoggingUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -31,7 +32,8 @@ public class ShpCommand implements CommandExecutor {
                 String backupFile = BackupUtils.createBackup(storageType);
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aBackup complete! File: &e" + backupFile));
             } catch (Exception e) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cBackup failed: " + e.getMessage()));
+                LoggingUtils.error("Backup failed", e);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cBackup failed: An error occurred. See server logs."));
             }
             return true;
         }
@@ -53,7 +55,8 @@ public class ShpCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cRestore failed: File not found."));
                 }
             } catch (Exception e) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cRestore failed: " + e.getMessage()));
+                LoggingUtils.error("Restore failed", e);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cRestore failed: An error occurred. See server logs."));
             }
             return true;
         }

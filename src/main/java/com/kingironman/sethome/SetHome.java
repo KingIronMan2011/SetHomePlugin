@@ -16,7 +16,6 @@ import com.kingironman.sethome.metrics.MetricsHandler;
 import com.kingironman.sethome.utilities.ConfigUtils;
 import com.kingironman.sethome.utilities.HomeUtils;
 import com.kingironman.sethome.utilities.MessageUtils;
-import com.kingironman.sethome.utilities.UpdateChecker;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -91,14 +90,6 @@ public class SetHome extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EventMove(), this);
         getServer().getPluginManager().registerEvents(new EventQuit(), this);
         getServer().getPluginManager().registerEvents(new EventRespawn(), this);
-
-        // Check for updates
-        new UpdateChecker(128270).getVersion(version -> {
-            if (!getDescription().getVersion().equals(version)) {
-                getLogger().info("SetHome Remote version: " + version);
-                getLogger().info("SetHome Local version: " + getDescription().getVersion());
-            }
-        });
     }
 
     @Override
