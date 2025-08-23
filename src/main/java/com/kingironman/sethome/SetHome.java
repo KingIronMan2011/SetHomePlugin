@@ -15,6 +15,7 @@ import com.kingironman.sethome.metrics.MetricsHandler;
 import com.kingironman.sethome.utilities.ConfigUtils;
 import com.kingironman.sethome.utilities.HomeUtils;
 import com.kingironman.sethome.utilities.MessageUtils;
+import com.kingironman.sethome.utilities.LangMigration;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -46,6 +47,8 @@ public class SetHome extends JavaPlugin {
     @Override
 
     public void onEnable() {
+        // Migrate language files to ensure all required keys exist
+        LangMigration.migrateAll();
         // Copy default config if missing
         saveDefaultConfig();
         // Update config with new options (preserve user settings)

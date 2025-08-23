@@ -1,0 +1,21 @@
+{
+  "sethome.success": "&2[&a*&2] &aOra hai una nuova casa, &6{player}&a!",
+  "home.success": "&2[&a*&2] &aSei stato teletrasportato alla tua casa, &6{player}&a!",
+  "deletehome.success": "&2[&a*&2] &aLa tua casa è stata eliminata, &6{player}&a!",
+  "listhome.success": "Le tue case: {homes}",
+  "error.nohomes": "&cNon hai case impostate.",
+  "error.maxhomes": "&cHai raggiunto il numero massimo di case ({max}). Elimina una casa prima di impostarne una nuova.",
+  "error.invalidstoragetype": "&4[&cErrore&4] &cTipo di archiviazione non valido nella configurazione: '{type}'. Supportato: yaml, sqlite, mysql.",
+  "error.unknown": "&4[&cErrore&4] &cSi è verificato un errore sconosciuto.",
+  "error.notfound": "&4[&cErrore&4] &cNessuna casa trovata per &6{player}&c. Usa &a/sethome &cper crearne una!",
+  "error.missingworld": "&4[&cErrore&4] &cIl mondo della tua casa non esiste più. Contatta un amministratore o imposta una nuova casa.",
+  "error.cooldown": "&e[Cooldown] &cDevi aspettare &6{seconds} &csecondi prima di usare nuovamente questo comando, &6{player}&c.",
+  "error.warmup": "&b[Riscaldamento] &7Il comando verrà eseguito in &3{seconds}&7 secondi. Per favore aspetta...",
+  "error.onmove": "&6[Avviso] &cTi sei mosso! Comando annullato. Rimani fermo per completare l'azione.",
+  "error.denyconsole": "&4[&cErrore&4] &cQuesto comando può essere usato solo dai giocatori in gioco.",
+  "error.nopermission": "Non hai il permesso per farlo.",
+  "backup.success": "Backup completato! File: {file}",
+  "backup.fail": "Backup fallito: {error}",
+  "restore.success": "Ripristino avviato dal file: {file}",
+  "restore.fail": "Ripristino fallito: {error}"
+}

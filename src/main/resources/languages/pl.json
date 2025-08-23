@@ -1,0 +1,21 @@
+{
+  "sethome.success": "&2[&a*&2] &aMasz teraz nowy dom, &6{player}&a!",
+  "home.success": "&2[&a*&2] &aZostałeś przeteleportowany do swojego domu, &6{player}&a!",
+  "deletehome.success": "&2[&a*&2] &aTwój dom został usunięty, &6{player}&a!",
+  "listhome.success": "Twoje domy: {homes}",
+  "error.nohomes": "&cNie masz ustawionych żadnych domów.",
+  "error.maxhomes": "&cOsiągnąłeś maksymalną liczbę domów ({max}). Usuń dom, zanim ustawisz nowy.",
+  "error.invalidstoragetype": "&4[&cBłąd&4] &cNieprawidłowy typ przechowywania w konfiguracji: '{type}'. Obsługiwane: yaml, sqlite, mysql.",
+  "error.unknown": "&4[&cBłąd&4] &cWystąpił nieznany błąd.",
+  "error.notfound": "&4[&cBłąd&4] &cNie znaleziono domu dla &6{player}&c. Użyj &a/sethome &caby go utworzyć!",
+  "error.missingworld": "&4[&cBłąd&4] &cŚwiat twojego domu już nie istnieje. Skontaktuj się z administratorem lub ustaw nowy dom.",
+  "error.cooldown": "&e[Cooldown] &cMusisz poczekać &6{seconds} &csekund przed ponownym użyciem tego polecenia, &6{player}&c.",
+  "error.warmup": "&b[Rozgrzewka] &7Polecenie zostanie wykonane za &3{seconds}&7 sekund. Proszę czekać...",
+  "error.onmove": "&6[Uwaga] &cPoruszyłeś się! Polecenie anulowane. Stań nieruchomo, aby ukończyć akcję.",
+  "error.denyconsole": "&4[&cBłąd&4] &cTo polecenie może być używane tylko przez graczy w grze.",
+  "error.nopermission": "Nie masz do tego uprawnień.",
+  "backup.success": "Kopia zapasowa zakończona! Plik: {file}",
+  "backup.fail": "Kopia zapasowa nie powiodła się: {error}",
+  "restore.success": "Przywracanie rozpoczęte z pliku: {file}",
+  "restore.fail": "Przywracanie nie powiodło się: {error}"
+}

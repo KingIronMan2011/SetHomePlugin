@@ -1,0 +1,21 @@
+{
+  "sethome.success": "&2[&a*&2] &aJe hebt nu een nieuw thuis, &6{player}&a!",
+  "home.success": "&2[&a*&2] &aJe bent naar je thuis geteleporteerd, &6{player}&a!",
+  "deletehome.success": "&2[&a*&2] &aJe thuis is verwijderd, &6{player}&a!",
+  "listhome.success": "Je huizen: {homes}",
+  "error.nohomes": "&cJe hebt geen huizen ingesteld.",
+  "error.maxhomes": "&cJe hebt het maximum aantal huizen bereikt ({max}). Verwijder een huis voordat je een nieuw huis instelt.",
+  "error.invalidstoragetype": "&4[&cFout&4] &cOngeldig opslagtype in config: '{type}'. Ondersteund: yaml, sqlite, mysql.",
+  "error.unknown": "&4[&cFout&4] &cEr is een onbekende fout opgetreden.",
+  "error.notfound": "&4[&cFout&4] &cGeen huis gevonden voor &6{player}&c. Gebruik &a/sethome &com er één te maken!",
+  "error.missingworld": "&4[&cFout&4] &cDe wereld voor je huis bestaat niet meer. Neem contact op met een admin of stel een nieuw huis in.",
+  "error.cooldown": "&e[Cooldown] &cJe moet &6{seconds} &cseconden wachten voordat je dit commando opnieuw gebruikt, &6{player}&c.",
+  "error.warmup": "&b[Opwarmen] &7Het commando wordt uitgevoerd over &3{seconds}&7 seconden. Wacht alsjeblieft...",
+  "error.onmove": "&6[Opmerking] &cJe bent bewogen! Commando geannuleerd. Blijf stil staan om de actie te voltooien.",
+  "error.denyconsole": "&4[&cFout&4] &cDit commando kan alleen worden gebruikt door spelers in het spel.",
+  "error.nopermission": "Je hebt geen toestemming om dat te doen.",
+  "backup.success": "Back-up voltooid! Bestand: {file}",
+  "backup.fail": "Back-up mislukt: {error}",
+  "restore.success": "Herstel gestart vanaf bestand: {file}",
+  "restore.fail": "Herstel mislukt: {error}"
+}
