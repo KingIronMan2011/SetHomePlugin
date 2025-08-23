@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 
 public class UpdateChecker {
 
-    private final int resourceId;
+    public final int resourceId;
 
     public UpdateChecker(int resourceId) {
         this.resourceId = resourceId;
