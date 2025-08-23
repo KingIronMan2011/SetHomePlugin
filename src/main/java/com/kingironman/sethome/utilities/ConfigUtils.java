@@ -44,6 +44,10 @@ public class ConfigUtils {
         this.reloadConfig();
     }
 
+    public String getStorageType() {
+        return STORAGE_TYPE;
+    }
+
     public void reloadConfig() {
         SetHome.getInstance().reloadConfig();
     CMD_SETHOME_MESSAGE_SHOW = SetHome.getInstance().getConfig().getBoolean("sethome.message-show");

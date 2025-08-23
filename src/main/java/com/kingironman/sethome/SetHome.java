@@ -3,6 +3,8 @@ package com.kingironman.sethome;
 import com.kingironman.sethome.commands.CommandExecutor;
 import com.kingironman.sethome.commands.CommandAutoComplete;
 import com.kingironman.sethome.commands.Commands;
+import com.kingironman.sethome.commands.ShpCommand;
+import com.kingironman.sethome.commands.ShpAutoComplete;
 import com.kingironman.sethome.converters.ConfigManipulation;
 import com.kingironman.sethome.converters.ConfigV5ToV6;
 import com.kingironman.sethome.converters.HomesV5ToV6;
@@ -73,6 +75,8 @@ public class SetHome extends JavaPlugin {
     getCommand("deletehome").setTabCompleter(autoComplete);
     getCommand("listhome").setExecutor(executor);
     getCommand("listhome").setTabCompleter(autoComplete);
+    getCommand("shp").setExecutor(new ShpCommand());
+    getCommand("shp").setTabCompleter(new ShpAutoComplete());
 
         // Register events
         getServer().getPluginManager().registerEvents(new EventMove(), this);
