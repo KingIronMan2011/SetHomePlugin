@@ -78,4 +78,12 @@ public class ConfigUtils {
     MESSAGE_DENY_CONSOLE = SetHome.getInstance().getConfig().getString("messages.deny-console");
     }
 
+    /**
+     * Return the configured max homes for a player. Kept simple so API callers can query a value.
+     * Currently returns the global configured `MAX_HOMES_PER_PLAYER`.
+     */
+    public int getMaxHomesFor(org.bukkit.entity.Player player) {
+        return MAX_HOMES_PER_PLAYER;
+    }
+
 }
