@@ -8,7 +8,7 @@
 - [x] Add config migration for old settings
 - [x] Add support for MySQL or other database storage
 - [ ] Add home invite/teleport-to-other-player’s home feature
-- [ ] Add backup and restore for home data
+- [x] Add backup and restore for home data
 - [x] Add metrics/usage statistics (bStats integration)
 - [ ] Add configurable command aliases
 - [ ] Add in-game admin commands for managing other players’ homes
