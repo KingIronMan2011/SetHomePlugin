@@ -19,7 +19,6 @@ public class Commands {
 
     public void cmdListHome(Player player) {
         SetHome.getInstance().homeUtils.listHome(player);
-
     }
 
 }

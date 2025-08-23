@@ -77,6 +77,89 @@ public class HomeUtils {
         }
     }
 
+    // Invite support (in-memory)
+    private final Map<UUID, Invite> pendingInvites = new HashMap<>();
+
+    private static class Invite {
+        public final UUID from;
+        public final String homeName;
+        public final long expiryEpochMs;
+
+        public Invite(UUID from, String homeName, long expiryEpochMs) {
+            this.from = from;
+            this.homeName = homeName;
+            this.expiryEpochMs = expiryEpochMs;
+        }
+    }
+
+    public void sendHomeInvite(Player from, String targetName, String homeName) {
+        Player target = Bukkit.getPlayerExact(targetName);
+        if (target == null || !target.isOnline()) {
+            from.sendMessage(ChatColor.RED + "Player not online: " + targetName);
+            return;
+        }
+
+        if (!homeExists(from, homeName, false)) {
+            from.sendMessage(ChatColor.RED + "You don't have a home named: " + homeName);
+            return;
+        }
+
+        long expiry = System.currentTimeMillis() + (60 * 1000);
+        pendingInvites.put(target.getUniqueId(), new Invite(from.getUniqueId(), homeName, expiry));
+
+        from.sendMessage(ChatColor.GREEN + "Invite sent to " + target.getName() + " for home '" + homeName + "' (expires in 60s)");
+        target.sendMessage(ChatColor.YELLOW + "You have been invited to teleport to " + from.getName() + "'s home '" + homeName + "'. Use \"/acceptinvite\" to accept (60s).");
+
+        Bukkit.getScheduler().runTaskLater(SetHome.getInstance(), () -> {
+            Invite inv = pendingInvites.get(target.getUniqueId());
+            if (inv != null && inv.expiryEpochMs <= System.currentTimeMillis()) {
+                pendingInvites.remove(target.getUniqueId());
+                Player t = Bukkit.getPlayer(inv.from);
+                if (t != null && t.isOnline()) t.sendMessage(ChatColor.YELLOW + "Invite to " + target.getName() + " expired.");
+                Player tgt = Bukkit.getPlayer(target.getUniqueId());
+                if (tgt != null && tgt.isOnline()) tgt.sendMessage(ChatColor.YELLOW + "Invite expired.");
+            }
+        }, 20L * 65);
+    }
+
+    public void acceptHomeInvite(Player acceptor) {
+        Invite inv = pendingInvites.get(acceptor.getUniqueId());
+        if (inv == null) {
+            acceptor.sendMessage(ChatColor.RED + "You have no pending home invites.");
+            return;
+        }
+        if (inv.expiryEpochMs < System.currentTimeMillis()) {
+            pendingInvites.remove(acceptor.getUniqueId());
+            acceptor.sendMessage(ChatColor.RED + "Invite expired.");
+            return;
+        }
+
+        Player from = Bukkit.getPlayer(inv.from);
+        if (from == null || !from.isOnline()) {
+            pendingInvites.remove(acceptor.getUniqueId());
+            acceptor.sendMessage(ChatColor.RED + "The player who invited you is no longer online.");
+            return;
+        }
+
+        if (!homeExists(from, inv.homeName, false)) {
+            pendingInvites.remove(acceptor.getUniqueId());
+            acceptor.sendMessage(ChatColor.RED + "The inviting player's home no longer exists.");
+            return;
+        }
+
+        Location loc = getPlayerHome(from, inv.homeName);
+        if (loc == null) {
+            pendingInvites.remove(acceptor.getUniqueId());
+            acceptor.sendMessage(ChatColor.RED + "Failed to find the home location.");
+            return;
+        }
+
+        acceptor.teleport(loc);
+        acceptor.sendMessage(ChatColor.GREEN + "Teleported to " + from.getName() + "'s home '" + inv.homeName + "'.");
+        if (from.isOnline()) from.sendMessage(ChatColor.YELLOW + acceptor.getName() + " accepted your home invite.");
+        pendingInvites.remove(acceptor.getUniqueId());
+    }
+
     private String getXPath(String homeName){
         return "Homes."+ homeName +".X";
     }

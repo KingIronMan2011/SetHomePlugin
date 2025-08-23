@@ -4,6 +4,7 @@ import com.kingironman.sethome.commands.CommandExecutor;
 import com.kingironman.sethome.commands.CommandAutoComplete;
 import com.kingironman.sethome.commands.Commands;
 import com.kingironman.sethome.commands.ShpCommand;
+import com.kingironman.sethome.commands.InviteCommand;
 import com.kingironman.sethome.converters.ConfigManipulation;
 import com.kingironman.sethome.converters.ConfigV5ToV6;
 import com.kingironman.sethome.converters.HomesV5ToV6;
@@ -81,6 +82,10 @@ public class SetHome extends JavaPlugin {
         getCommand("listhome").setTabCompleter(autoComplete);
         getCommand("shp").setExecutor(new ShpCommand());
         getCommand("shp").setTabCompleter(autoComplete);
+        getCommand("invitehome").setExecutor(new InviteCommand());
+        getCommand("invitehome").setTabCompleter(autoComplete);
+        getCommand("acceptinvite").setExecutor(new InviteCommand());
+        getCommand("acceptinvite").setTabCompleter(autoComplete);
 
         // Register events
         getServer().getPluginManager().registerEvents(new EventMove(), this);
@@ -103,6 +108,8 @@ public class SetHome extends JavaPlugin {
         getCommand("home").setExecutor(null);
         getCommand("deletehome").setExecutor(null);
         getCommand("listhome").setExecutor(null);
+        getCommand("invitehome").setExecutor(null);
+        getCommand("acceptinvite").setExecutor(null);
 
         // Unregister events
         PlayerMoveEvent.getHandlerList().unregister(this);

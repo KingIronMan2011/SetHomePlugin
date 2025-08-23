@@ -56,6 +56,30 @@ public class CommandAutoComplete implements TabCompleter {
 				}
 				return suggestions;
 			}
+		} else if (cmd.equals("invitehome")) {
+			// /invitehome <player> [homeName]
+			if (args.length == 1) {
+				List<String> matches = new ArrayList<>();
+				String prefix = args[0].toLowerCase();
+				for (Player p : org.bukkit.Bukkit.getOnlinePlayers()) {
+					if (p.getName().toLowerCase().startsWith(prefix) && !p.getUniqueId().equals(player.getUniqueId())) {
+						matches.add(p.getName());
+					}
+				}
+				Collections.sort(matches);
+				return matches;
+			} else if (args.length == 2) {
+				List<String> homeNames = SetHome.getInstance().homeUtils.getHomeNames(player);
+				String prefix = args[1].toLowerCase();
+				List<String> suggestions = new ArrayList<>();
+				for (String home : homeNames) {
+					if (home.toLowerCase().startsWith(prefix)) suggestions.add(home);
+				}
+				return suggestions;
+			}
+		} else if (cmd.equals("acceptinvite")) {
+			// no suggestions
+			return Collections.emptyList();
 		}
 		return Collections.emptyList();
 	}

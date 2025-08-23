@@ -1,5 +1,5 @@
 name: SetHome
-version: '6.4.7'
+version: '6.4.8'
 main: com.kingironman.sethome.SetHome
 api-version: '1.21'
 description: A lightweight SetHome plugin for Bukkit/Spigot
@@ -16,3 +16,7 @@ commands:
     description: List all your home
   shp:
     description: SetHomePlugin admin/utility command (backup, restore, help)
+  invitehome:
+    description: Invite another player to teleport to your home
+  acceptinvite:
+    description: Accept a previous home invite
