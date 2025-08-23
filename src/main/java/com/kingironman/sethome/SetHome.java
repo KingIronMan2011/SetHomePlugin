@@ -5,6 +5,7 @@ import com.kingironman.sethome.commands.CommandAutoComplete;
 import com.kingironman.sethome.commands.Commands;
 import com.kingironman.sethome.commands.ShpCommand;
 import com.kingironman.sethome.commands.InviteCommand;
+import com.kingironman.sethome.commands.HomesCommand;
 import com.kingironman.sethome.converters.ConfigManipulation;
 import com.kingironman.sethome.converters.ConfigV5ToV6;
 import com.kingironman.sethome.converters.HomesV5ToV6;
@@ -85,11 +86,14 @@ public class SetHome extends JavaPlugin {
         getCommand("invitehome").setTabCompleter(autoComplete);
         getCommand("acceptinvite").setExecutor(new InviteCommand());
         getCommand("acceptinvite").setTabCompleter(autoComplete);
+        getCommand("homes").setExecutor(new HomesCommand());
+        getCommand("homes").setTabCompleter(autoComplete);
 
         // Register events
         getServer().getPluginManager().registerEvents(new EventMove(), this);
         getServer().getPluginManager().registerEvents(new EventQuit(), this);
         getServer().getPluginManager().registerEvents(new EventRespawn(), this);
+    getServer().getPluginManager().registerEvents(new com.kingironman.sethome.gui.HomeGuiListener(), this);
     }
 
     @Override
@@ -101,6 +105,8 @@ public class SetHome extends JavaPlugin {
         getCommand("listhome").setExecutor(null);
         getCommand("invitehome").setExecutor(null);
         getCommand("acceptinvite").setExecutor(null);
+    getCommand("homes").setExecutor(null);
+    getCommand("homes").setTabCompleter(null);
 
         // Unregister events
         PlayerMoveEvent.getHandlerList().unregister(this);

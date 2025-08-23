@@ -121,6 +121,19 @@ public class CommandAutoComplete implements TabCompleter {
 			// no suggestions
 			return Collections.emptyList();
 		}
+		else if (cmd.equals("homes")) {
+			// /homes [player] - suggest online player names for OPs
+			if (args.length == 1) {
+				if (!player.isOp()) return Collections.emptyList();
+				List<String> matches = new ArrayList<>();
+				String prefix = args[0].toLowerCase();
+				for (Player p : org.bukkit.Bukkit.getOnlinePlayers()) {
+					if (p.getName().toLowerCase().startsWith(prefix)) matches.add(p.getName());
+				}
+				Collections.sort(matches);
+				return matches;
+			}
+		}
 		return Collections.emptyList();
 	}
 }
