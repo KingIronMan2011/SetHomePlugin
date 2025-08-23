@@ -17,6 +17,8 @@ public class ShpCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/listhome &7- List all your homes"));
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/shp backup &7- Backup all home data"));
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/shp restore <file> &7- Restore home data from backup"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/invitehome <player> [homeName] &7- Invite a player to your home"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/acceptinvite &7- Accept a home invite"));
             return true;
         }
         if (args[0].equalsIgnoreCase("backup")) {
