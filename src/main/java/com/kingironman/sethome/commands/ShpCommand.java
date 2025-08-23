@@ -11,6 +11,10 @@ public class ShpCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/sethome &7- Set your home"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/home &7- Teleport to your home"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/deletehome &7- Delete your home"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/listhome &7- List all your homes"));
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/shp backup &7- Backup all home data"));
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&e/shp restore <file> &7- Restore home data from backup"));
             return true;

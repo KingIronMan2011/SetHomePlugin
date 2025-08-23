@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.kingironman'
-version = '6.4.3'
+version = '6.4.4'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -43,12 +43,12 @@ processResources {
 
 jar {
     archiveBaseName.set('SetHome')
-    archiveVersion.set('6.4.3')
+    archiveVersion.set('6.4.4')
 }
 
 shadowJar {
     archiveBaseName.set('SetHome')
-    archiveVersion.set('6.4.3')
+    archiveVersion.set('6.4.4')
     archiveClassifier.set('')
     relocate 'org.bstats', 'com.kingironman.sethome.shaded.bstats'
 }
