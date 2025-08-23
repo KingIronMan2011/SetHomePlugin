@@ -24,6 +24,8 @@ SetHome is a lightweight, modern Minecraft plugin for Spigot servers that lets p
 - Automatic config migration/updating
 - No permissions required by default (easy for all playeryess)
 - Integrated with [bStats](https://bstats.org/) for anonymous plugin usage metrics
+- Public Java API for other plugins to interact with SetHome programmatically
+- Importers for other home plugins (Essentials-style YAML importer available via `/shp import`)
 
 ---
 
@@ -87,6 +89,7 @@ On first startup the plugin will migrate and create missing language keys automa
 | /deletehome  | Delete your home           |
 | /listhome    | List all your homes        |
 | /shp help    | Lists all commands         |
+| `/shp import <type> <file>` | Import homes from another plugin export (admin only) |
 
 ---
 
@@ -98,6 +101,22 @@ Use these commands from the server console or in-game (requires appropriate perm
 /sethome backup              # creates a backup file under plugins/SetHome/backups/
 /sethome restore <filename>  # restores homes from a backup file
 ```
+
+## 🔁 Importing from other plugins
+
+You can import homes from supported third-party exports. Currently supported:
+
+- `essentials` — Imports Essentials-style YAML files exported from Essentials/EssentialsX.
+
+Usage (upload the exported file to the plugin folder, then run as an OP):
+
+```text
+/shp import essentials <filename.yml>
+```
+
+The plugin will write imported homes into `plugins/SetHome/homes/<player-uuid>.yml` and report how many homes were imported.
+
+Note: Name -> UUID resolution relies on server-known players; consider providing a UUID-keyed export for best results.
 
 Backups include YAML and SQLite data where applicable. For MySQL consider using a database dump tool for full exports.
 
