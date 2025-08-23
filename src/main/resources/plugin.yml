@@ -4,6 +4,7 @@ main: com.kingironman.sethome.SetHome
 api-version: '1.21'
 description: A lightweight SetHome plugin for Bukkit/Spigot
 author: KingIronMan2011
+website: https://www.spigotmc.org/resources/sethome-plugin.128270/
 commands:
   sethome:
     description: Set your home

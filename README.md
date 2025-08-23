@@ -22,7 +22,7 @@ SetHome is a lightweight, modern Minecraft plugin for Spigot servers that lets p
 - Autocompletion for all commands
 - Console notifications for plugin updates
 - Automatic config migration/updating
-- No permissions required by default (easy for all players)
+- No permissions required by default (easy for all playeryess)
 - Integrated with [bStats](https://bstats.org/) for anonymous plugin usage metrics
 
 ---

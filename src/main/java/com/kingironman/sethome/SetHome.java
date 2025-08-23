@@ -16,6 +16,7 @@ import com.kingironman.sethome.utilities.ConfigUtils;
 import com.kingironman.sethome.utilities.HomeUtils;
 import com.kingironman.sethome.utilities.MessageUtils;
 import com.kingironman.sethome.utilities.LangMigration;
+import com.kingironman.sethome.utilities.UpdateChecker;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -88,6 +89,15 @@ public class SetHome extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EventMove(), this);
         getServer().getPluginManager().registerEvents(new EventQuit(), this);
         getServer().getPluginManager().registerEvents(new EventRespawn(), this);
+
+        // Check for updates
+        new UpdateChecker(32748).getVersion(version -> {
+            if (!getDescription().getVersion().equals(version)) {
+                getLogger().info("SetHome Remote version: " + version);
+                getLogger().info("SetHome Local version: " + getDescription().getVersion());
+                getLogger().info("There is a new update available for SetHome! Update available at https://www.spigotmc.org/resources/set-home.32748/");
+            }
+        });
     }
 
     @Override
