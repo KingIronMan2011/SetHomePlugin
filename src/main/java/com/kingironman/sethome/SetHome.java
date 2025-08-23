@@ -92,7 +92,6 @@ public class SetHome extends JavaPlugin {
             if (!getDescription().getVersion().equals(version)) {
                 getLogger().info("SetHome Remote version: " + version);
                 getLogger().info("SetHome Local version: " + getDescription().getVersion());
-                getLogger().info("There is a new update available for SetHome! Update available at https://www.spigotmc.org/resources/sethome-plugin.128270/");
             }
         });
     }
