@@ -44,12 +44,16 @@ public class SetHome extends JavaPlugin {
     public HomesV61ToV62 homesV61ToV62;
 
     @Override
-    public void onEnable() {
 
-    // Copy default config if missing
-    saveDefaultConfig();
-    // Update config with new options (preserve user settings)
-    new ConfigManipulation().updateConfigWithDefaults();
+    public void onEnable() {
+        // Copy default config if missing
+        saveDefaultConfig();
+        // Update config with new options (preserve user settings)
+        new ConfigManipulation().updateConfigWithDefaults();
+
+        // Load language from config or default to 'en'
+        String lang = getConfig().getString("extra.language", "en");
+        com.kingironman.sethome.utilities.LangUtils.loadLanguage(this, lang);
 
         // Initialize objects
         configUtils = new ConfigUtils();
@@ -61,21 +65,21 @@ public class SetHome extends JavaPlugin {
         homesV5ToV6 = new HomesV5ToV6();
         homesV61ToV62 = new HomesV61ToV62();
 
-    metricsHandler = new MetricsHandler(this, 27015);
+        metricsHandler = new MetricsHandler(this, 27015);
 
-    // Register commands and tab completers
-    CommandExecutor executor = new CommandExecutor();
-    CommandAutoComplete autoComplete = new CommandAutoComplete();
-    getCommand("sethome").setExecutor(executor);
-    getCommand("sethome").setTabCompleter(autoComplete);
-    getCommand("home").setExecutor(executor);
-    getCommand("home").setTabCompleter(autoComplete);
-    getCommand("deletehome").setExecutor(executor);
-    getCommand("deletehome").setTabCompleter(autoComplete);
-    getCommand("listhome").setExecutor(executor);
-    getCommand("listhome").setTabCompleter(autoComplete);
-    getCommand("shp").setExecutor(new ShpCommand());
-    getCommand("shp").setTabCompleter(autoComplete);
+        // Register commands and tab completers
+        CommandExecutor executor = new CommandExecutor();
+        CommandAutoComplete autoComplete = new CommandAutoComplete();
+        getCommand("sethome").setExecutor(executor);
+        getCommand("sethome").setTabCompleter(autoComplete);
+        getCommand("home").setExecutor(executor);
+        getCommand("home").setTabCompleter(autoComplete);
+        getCommand("deletehome").setExecutor(executor);
+        getCommand("deletehome").setTabCompleter(autoComplete);
+        getCommand("listhome").setExecutor(executor);
+        getCommand("listhome").setTabCompleter(autoComplete);
+        getCommand("shp").setExecutor(new ShpCommand());
+        getCommand("shp").setTabCompleter(autoComplete);
 
         // Register events
         getServer().getPluginManager().registerEvents(new EventMove(), this);

@@ -1,0 +1,17 @@
+{
+  "sethome.success": "&2[&a*&2] &aYou now have a new home, &6{player}&a!",
+  "home.success": "&2[&a*&2] &aYou have been teleported to your home, &6{player}&a!",
+  "deletehome.success": "&2[&a*&2] &aYour home has been deleted, &6{player}&a!",
+  "listhome.success": "Your homes: {homes}",
+  "error.notfound": "&4[&cError&4] &cNo home found for &6{player}&c. Use &a/sethome &cto create one!",
+  "error.missingworld": "&4[&cError&4] &cThe world for your home no longer exists. Please contact an admin or set a new home.",
+  "error.cooldown": "&e[Cooldown] &cYou must wait &6{seconds} &cseconds before using this command again, &6{player}&c.",
+  "error.warmup": "&b[Warmup] &7Command will execute in &3{seconds}&7 seconds. Please wait...",
+  "error.onmove": "&6[Notice] &cYou moved! Command cancelled. Stand still to complete the action.",
+  "error.denyconsole": "&4[&cError&4] &cThis command can only be used by in-game players.",
+  "error.nopermission": "You do not have permission to do that.",
+  "backup.success": "Backup complete! File: {file}",
+  "backup.fail": "Backup failed: {error}",
+  "restore.success": "Restore started from file: {file}",
+  "restore.fail": "Restore failed: {error}"
+}

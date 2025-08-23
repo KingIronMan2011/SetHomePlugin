@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.kingironman'
-version = '6.4.4'
+version = '6.4.5'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -28,6 +28,7 @@ dependencies {
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
     implementation 'com.mysql:mysql-connector-j:8.3.0'
     implementation 'org.bstats:bstats-bukkit:3.0.2'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 }
 
 processResources {
@@ -43,12 +44,12 @@ processResources {
 
 jar {
     archiveBaseName.set('SetHome')
-    archiveVersion.set('6.4.4')
+    archiveVersion.set('6.4.5')
 }
 
 shadowJar {
     archiveBaseName.set('SetHome')
-    archiveVersion.set('6.4.4')
+    archiveVersion.set('6.4.5')
     archiveClassifier.set('')
     relocate 'org.bstats', 'com.kingironman.sethome.shaded.bstats'
 }

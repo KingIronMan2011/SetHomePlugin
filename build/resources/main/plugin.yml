@@ -1,5 +1,5 @@
 name: SetHome
-version: '6.4.3'
+version: '6.4.5'
 main: com.kingironman.sethome.SetHome
 api-version: '1.21'
 description: A lightweight SetHome plugin for Bukkit/Spigot

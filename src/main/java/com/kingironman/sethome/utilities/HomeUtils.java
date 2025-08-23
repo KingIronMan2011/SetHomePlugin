@@ -21,7 +21,11 @@ import static org.bukkit.Bukkit.getLogger;
  * Utility class for managing player homes (set, get, list, delete) using YAML files.
  * Handles home data storage, retrieval, and validation for the SetHome plugin.
  */
+
 public class HomeUtils {
+    private final String storageType;
+    private final SQLiteUtils sqliteUtils;
+    private final MySQLUtils mysqlUtils;
 
     private final String homesFilePath;
     private final HashMap<UUID, File> homeFiles;
@@ -35,18 +39,42 @@ public class HomeUtils {
     public final String PATH_WORLD = "Homes.main.World";
 
     public HomeUtils() {
+        storageType = SetHome.getInstance().configUtils.getStorageType();
         homesFilePath = SetHome.getInstance().getDataFolder() + File.separator + "homes";
         homeFiles = new HashMap<>();
         homeYamls = new HashMap<>();
         if (!new File(homesFilePath).exists()) {
             try {
                 Files.createDirectories(Paths.get(homesFilePath));
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 // Do nothing
             }
         }
-
+        if (storageType.equalsIgnoreCase("sqlite")) {
+            sqliteUtils = new SQLiteUtils();
+            try {
+                sqliteUtils.setupTables();
+            } catch (Exception e) {
+                getLogger().severe("Failed to setup SQLite tables: " + e.getMessage());
+            }
+            mysqlUtils = null;
+        } else if (storageType.equalsIgnoreCase("mysql")) {
+            sqliteUtils = null;
+            String host = SetHome.getInstance().getConfig().getString("extra.mysql.host", "localhost");
+            int port = SetHome.getInstance().getConfig().getInt("extra.mysql.port", 3306);
+            String database = SetHome.getInstance().getConfig().getString("extra.mysql.database", "sethome");
+            String username = SetHome.getInstance().getConfig().getString("extra.mysql.username", "root");
+            String password = SetHome.getInstance().getConfig().getString("extra.mysql.password", "password");
+            mysqlUtils = new MySQLUtils(host, port, database, username, password);
+            try {
+                mysqlUtils.setupTables();
+            } catch (Exception e) {
+                getLogger().severe("Failed to setup MySQL tables: " + e.getMessage());
+            }
+        } else {
+            sqliteUtils = null;
+            mysqlUtils = null;
+        }
     }
 
     private String getXPath(String homeName){
@@ -92,17 +120,76 @@ public class HomeUtils {
      * @return true if the home exists and world is valid, false otherwise
      */
     public boolean homeExists(Player player, String homeName, boolean verbose) {
-        if (getHomeYaml(player).getString(getWorldXPath(homeName)) == null) {
-            if (verbose)
-                SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.MISSING_HOME, null);
+        if (storageType.equalsIgnoreCase("sqlite")) {
+            try {
+                sqliteUtils.connect();
+                java.sql.PreparedStatement ps = sqliteUtils.getConnection().prepareStatement("SELECT world FROM homes WHERE uuid=? AND home_name=?");
+                ps.setString(1, player.getUniqueId().toString());
+                ps.setString(2, homeName);
+                java.sql.ResultSet rs = ps.executeQuery();
+                if (!rs.next()) {
+                    if (verbose)
+                        SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.MISSING_HOME, null);
+                    rs.close(); ps.close();
+                    return false;
+                }
+                String world = rs.getString("world");
+                rs.close(); ps.close();
+                if (Bukkit.getWorld(world) == null) {
+                    if (verbose)
+                        SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.MISSING_WORLD, null);
+                    return false;
+                }
+                return true;
+            } catch (Exception e) {
+                getLogger().severe("SQLite homeExists error: " + e.getMessage());
+                return false;
+            }
+        } else if (storageType.equalsIgnoreCase("mysql")) {
+            try {
+                mysqlUtils.connect();
+                java.sql.PreparedStatement ps = mysqlUtils.getConnection().prepareStatement("SELECT world FROM homes WHERE uuid=? AND home_name=?");
+                ps.setString(1, player.getUniqueId().toString());
+                ps.setString(2, homeName);
+                java.sql.ResultSet rs = ps.executeQuery();
+                if (!rs.next()) {
+                    if (verbose)
+                        SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.MISSING_HOME, null);
+                    rs.close(); ps.close();
+                    return false;
+                }
+                String world = rs.getString("world");
+                rs.close(); ps.close();
+                if (Bukkit.getWorld(world) == null) {
+                    if (verbose)
+                        SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.MISSING_WORLD, null);
+                    return false;
+                }
+                return true;
+            } catch (Exception e) {
+                getLogger().severe("MySQL homeExists error: " + e.getMessage());
+                return false;
+            }
+        } else if (storageType.equalsIgnoreCase("yaml")) {
+            if (getHomeYaml(player).getString(getWorldXPath(homeName)) == null) {
+                if (verbose)
+                    SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.MISSING_HOME, null);
+                return false;
+            }
+            if (Bukkit.getWorld(getHomeYaml(player).getString(getWorldXPath(homeName))) == null) {
+                if (verbose)
+                    SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.MISSING_WORLD, null);
+                return false;
+            }
+            return true;
+        } else {
+            String msg = "[SetHome] Invalid storage-type in config: '" + storageType + "'. Supported: yaml, sqlite, mysql.";
+            getLogger().severe(msg);
+            if (verbose && player != null) {
+                player.sendMessage(ChatColor.RED + msg);
+            }
             return false;
         }
-        if (Bukkit.getWorld(getHomeYaml(player).getString(getWorldXPath(homeName))) == null) {
-            if (verbose)
-                SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.MISSING_WORLD, null);
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -114,18 +201,68 @@ public class HomeUtils {
         int maxHomes = SetHome.getInstance().configUtils.MAX_HOMES_PER_PLAYER;
         List<String> homeNames = getHomeNames(player);
         if (maxHomes > 0 && !homeNames.contains(homeName) && homeNames.size() >= maxHomes) {
-            player.sendMessage(ChatColor.RED + "You have reached the maximum number of homes (" + maxHomes + "). Delete a home before setting a new one.");
+            Map<String, String> params = new HashMap<>();
+            params.put("max", String.valueOf(maxHomes));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', com.kingironman.sethome.utilities.LangUtils.get("error.maxhomes", params)));
             return;
         }
-        getHomeYaml(player).set(getXPath(homeName), player.getLocation().getX());
-        getHomeYaml(player).set(getYPath(homeName), player.getLocation().getY());
-        getHomeYaml(player).set(getZPath(homeName), player.getLocation().getZ());
-        getHomeYaml(player).set(getYawXPath(homeName), player.getLocation().getYaw());
-        getHomeYaml(player).set(getPitchXPath(homeName), player.getLocation().getPitch());
-        getHomeYaml(player).set(getWorldXPath(homeName), player.getLocation().getWorld().getName());
-        saveHomesFile(player);
-        if (SetHome.getInstance().configUtils.CMD_SETHOME_MESSAGE_SHOW)
-            SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_SETHOME, null);
+        if (storageType.equalsIgnoreCase("sqlite")) {
+            try {
+                sqliteUtils.connect();
+                java.sql.PreparedStatement ps = sqliteUtils.getConnection().prepareStatement(
+                        "INSERT OR REPLACE INTO homes (uuid, home_name, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                ps.setString(1, player.getUniqueId().toString());
+                ps.setString(2, homeName);
+                ps.setString(3, player.getLocation().getWorld().getName());
+                ps.setDouble(4, player.getLocation().getX());
+                ps.setDouble(5, player.getLocation().getY());
+                ps.setDouble(6, player.getLocation().getZ());
+                ps.setFloat(7, player.getLocation().getYaw());
+                ps.setFloat(8, player.getLocation().getPitch());
+                ps.executeUpdate();
+                ps.close();
+            } catch (Exception e) {
+                getLogger().severe("SQLite setPlayerHome error: " + e.getMessage());
+            }
+            if (SetHome.getInstance().configUtils.CMD_SETHOME_MESSAGE_SHOW)
+                SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_SETHOME, null);
+        } else if (storageType.equalsIgnoreCase("mysql")) {
+            try {
+                mysqlUtils.connect();
+                java.sql.PreparedStatement ps = mysqlUtils.getConnection().prepareStatement(
+                        "REPLACE INTO homes (uuid, home_name, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                ps.setString(1, player.getUniqueId().toString());
+                ps.setString(2, homeName);
+                ps.setString(3, player.getLocation().getWorld().getName());
+                ps.setDouble(4, player.getLocation().getX());
+                ps.setDouble(5, player.getLocation().getY());
+                ps.setDouble(6, player.getLocation().getZ());
+                ps.setFloat(7, player.getLocation().getYaw());
+                ps.setFloat(8, player.getLocation().getPitch());
+                ps.executeUpdate();
+                ps.close();
+            } catch (Exception e) {
+                getLogger().severe("MySQL setPlayerHome error: " + e.getMessage());
+            }
+            if (SetHome.getInstance().configUtils.CMD_SETHOME_MESSAGE_SHOW)
+                SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_SETHOME, null);
+        } else if (storageType.equalsIgnoreCase("yaml")) {
+            getHomeYaml(player).set(getXPath(homeName), player.getLocation().getX());
+            getHomeYaml(player).set(getYPath(homeName), player.getLocation().getY());
+            getHomeYaml(player).set(getZPath(homeName), player.getLocation().getZ());
+            getHomeYaml(player).set(getYawXPath(homeName), player.getLocation().getYaw());
+            getHomeYaml(player).set(getPitchXPath(homeName), player.getLocation().getPitch());
+            getHomeYaml(player).set(getWorldXPath(homeName), player.getLocation().getWorld().getName());
+            saveHomesFile(player);
+            if (SetHome.getInstance().configUtils.CMD_SETHOME_MESSAGE_SHOW)
+                SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_SETHOME, null);
+        } else {
+            String msg = "[SetHome] Invalid storage-type in config: '" + storageType + "'. Supported: yaml, sqlite, mysql.";
+            getLogger().severe(msg);
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + msg);
+            }
+        }
     }
 
     /**
@@ -135,14 +272,73 @@ public class HomeUtils {
      * @return Location of the home
      */
     public Location getPlayerHome(Player player, String homeName) {
-        return new Location(
-                Bukkit.getWorld(getHomeYaml(player).getString(getWorldXPath(homeName))),
-                getHomeYaml(player).getDouble(getXPath(homeName)),
-                getHomeYaml(player).getDouble(getYPath(homeName)),
-                getHomeYaml(player).getDouble(getZPath(homeName)),
-                getHomeYaml(player).getLong(getYawXPath(homeName)),
-                getHomeYaml(player).getLong(getPitchXPath(homeName))
-        );
+        if (storageType.equalsIgnoreCase("sqlite")) {
+            try {
+                sqliteUtils.connect();
+                java.sql.PreparedStatement ps = sqliteUtils.getConnection().prepareStatement(
+                        "SELECT world, x, y, z, yaw, pitch FROM homes WHERE uuid=? AND home_name=?");
+                ps.setString(1, player.getUniqueId().toString());
+                ps.setString(2, homeName);
+                java.sql.ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    Location loc = new Location(
+                            Bukkit.getWorld(rs.getString("world")),
+                            rs.getDouble("x"),
+                            rs.getDouble("y"),
+                            rs.getDouble("z"),
+                            rs.getFloat("yaw"),
+                            rs.getFloat("pitch")
+                    );
+                    rs.close(); ps.close();
+                    return loc;
+                }
+                rs.close(); ps.close();
+            } catch (Exception e) {
+                getLogger().severe("SQLite getPlayerHome error: " + e.getMessage());
+            }
+            return null;
+        } else if (storageType.equalsIgnoreCase("mysql")) {
+            try {
+                mysqlUtils.connect();
+                java.sql.PreparedStatement ps = mysqlUtils.getConnection().prepareStatement(
+                        "SELECT world, x, y, z, yaw, pitch FROM homes WHERE uuid=? AND home_name=?");
+                ps.setString(1, player.getUniqueId().toString());
+                ps.setString(2, homeName);
+                java.sql.ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    Location loc = new Location(
+                            Bukkit.getWorld(rs.getString("world")),
+                            rs.getDouble("x"),
+                            rs.getDouble("y"),
+                            rs.getDouble("z"),
+                            rs.getFloat("yaw"),
+                            rs.getFloat("pitch")
+                    );
+                    rs.close(); ps.close();
+                    return loc;
+                }
+                rs.close(); ps.close();
+            } catch (Exception e) {
+                getLogger().severe("MySQL getPlayerHome error: " + e.getMessage());
+            }
+            return null;
+        } else if (storageType.equalsIgnoreCase("yaml")) {
+            return new Location(
+                    Bukkit.getWorld(getHomeYaml(player).getString(getWorldXPath(homeName))),
+                    getHomeYaml(player).getDouble(getXPath(homeName)),
+                    getHomeYaml(player).getDouble(getYPath(homeName)),
+                    getHomeYaml(player).getDouble(getZPath(homeName)),
+                    getHomeYaml(player).getLong(getYawXPath(homeName)),
+                    getHomeYaml(player).getLong(getPitchXPath(homeName))
+            );
+        } else {
+            String msg = "[SetHome] Invalid storage-type in config: '" + storageType + "'. Supported: yaml, sqlite, mysql.";
+            getLogger().severe(msg);
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + msg);
+            }
+            return null;
+        }
     }
 
     /**
@@ -165,24 +361,57 @@ public class HomeUtils {
      * @return List of home names
      */
     public List<String> getHomeNames(Player player) {
-        YamlConfiguration config = getHomeYaml(player); // Assuming this loads the YAML for the player
-        List<String> homeNames = new ArrayList<>();
-
-        // Debugging output to ensure YAML is loaded correctly
-        if (config == null) {
-            getLogger().warning("Configuration is null for player: " + player.getName());
+        if (storageType.equalsIgnoreCase("sqlite")) {
+            List<String> homeNames = new ArrayList<>();
+            try {
+                sqliteUtils.connect();
+                java.sql.PreparedStatement ps = sqliteUtils.getConnection().prepareStatement(
+                        "SELECT home_name FROM homes WHERE uuid=?");
+                ps.setString(1, player.getUniqueId().toString());
+                java.sql.ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    homeNames.add(rs.getString("home_name"));
+                }
+                rs.close(); ps.close();
+            } catch (Exception e) {
+                getLogger().severe("SQLite getHomeNames error: " + e.getMessage());
+            }
+            return homeNames;
+        } else if (storageType.equalsIgnoreCase("mysql")) {
+            List<String> homeNames = new ArrayList<>();
+            try {
+                mysqlUtils.connect();
+                java.sql.PreparedStatement ps = mysqlUtils.getConnection().prepareStatement(
+                        "SELECT home_name FROM homes WHERE uuid=?");
+                ps.setString(1, player.getUniqueId().toString());
+                java.sql.ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    homeNames.add(rs.getString("home_name"));
+                }
+                rs.close(); ps.close();
+            } catch (Exception e) {
+                getLogger().severe("MySQL getHomeNames error: " + e.getMessage());
+            }
+            return homeNames;
+        } else if (storageType.equalsIgnoreCase("yaml")) {
+            YamlConfiguration config = getHomeYaml(player);
+            List<String> homeNames = new ArrayList<>();
+            if (config == null) {
+                getLogger().warning("Configuration is null for player: " + player.getName());
+                return Collections.emptyList();
+            }
+            if (config.contains("Homes")) {
+                homeNames.addAll(config.getConfigurationSection("Homes").getKeys(false));
+            }
+            return homeNames.isEmpty() ? Collections.emptyList() : homeNames;
+        } else {
+            String msg = "[SetHome] Invalid storage-type in config: '" + storageType + "'. Supported: yaml, sqlite, mysql.";
+            getLogger().severe(msg);
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + msg);
+            }
             return Collections.emptyList();
         }
-
-        if (config.contains("Homes")) {
-            // Debugging output to see if the "Homes" section is accessible
-            getLogger().info("Homes section exists for player: " + player.getName());
-            homeNames.addAll(config.getConfigurationSection("Homes").getKeys(false));
-        } else {
-            getLogger().warning("No homes found in the configuration for player: " + player.getName());
-        }
-
-        return homeNames.isEmpty() ? Collections.emptyList() : homeNames;
     }
 
     /**
@@ -191,10 +420,12 @@ public class HomeUtils {
      */
     public void listHome(Player player){
         List<String> homeNames = getHomeNames(player);
+        Map<String, String> params = new HashMap<>();
+        params.put("homes", String.join(", ", homeNames));
         if (homeNames.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "You have no homes set.");
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', com.kingironman.sethome.utilities.LangUtils.get("error.nohomes", params)));
         } else {
-            player.sendMessage(ChatColor.GREEN + "Your homes: " + ChatColor.YELLOW + String.join(", ", homeNames));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', com.kingironman.sethome.utilities.LangUtils.get("listhome.success", params)));
         }
     }
 
@@ -205,16 +436,52 @@ public class HomeUtils {
      */
     public void deletePlayerHome(Player player, String homeName) {
         if (!homeExists(player, homeName, true)) return;
-        getHomeYaml(player).set(getXPath(homeName), null);
-        getHomeYaml(player).set(getYPath(homeName), null);
-        getHomeYaml(player).set(getZPath(homeName), null);
-        getHomeYaml(player).set(getYawXPath(homeName), null);
-        getHomeYaml(player).set(getPitchXPath(homeName), null);
-        getHomeYaml(player).set(getWorldXPath(homeName), null);
-        getHomeYaml(player).set("Homes."+homeName, null);
-        saveHomesFile(player);
-        if (SetHome.getInstance().configUtils.CMD_DELETEHOME_MESSAGE_SHOW)
-            SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_DELETEHOME, null);
+        if (storageType.equalsIgnoreCase("sqlite")) {
+            try {
+                sqliteUtils.connect();
+                java.sql.PreparedStatement ps = sqliteUtils.getConnection().prepareStatement(
+                        "DELETE FROM homes WHERE uuid=? AND home_name=?");
+                ps.setString(1, player.getUniqueId().toString());
+                ps.setString(2, homeName);
+                ps.executeUpdate();
+                ps.close();
+            } catch (Exception e) {
+                getLogger().severe("SQLite deletePlayerHome error: " + e.getMessage());
+            }
+            if (SetHome.getInstance().configUtils.CMD_DELETEHOME_MESSAGE_SHOW)
+                SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_DELETEHOME, null);
+        } else if (storageType.equalsIgnoreCase("mysql")) {
+            try {
+                mysqlUtils.connect();
+                java.sql.PreparedStatement ps = mysqlUtils.getConnection().prepareStatement(
+                        "DELETE FROM homes WHERE uuid=? AND home_name=?");
+                ps.setString(1, player.getUniqueId().toString());
+                ps.setString(2, homeName);
+                ps.executeUpdate();
+                ps.close();
+            } catch (Exception e) {
+                getLogger().severe("MySQL deletePlayerHome error: " + e.getMessage());
+            }
+            if (SetHome.getInstance().configUtils.CMD_DELETEHOME_MESSAGE_SHOW)
+                SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_DELETEHOME, null);
+        } else if (storageType.equalsIgnoreCase("yaml")) {
+            getHomeYaml(player).set(getXPath(homeName), null);
+            getHomeYaml(player).set(getYPath(homeName), null);
+            getHomeYaml(player).set(getZPath(homeName), null);
+            getHomeYaml(player).set(getYawXPath(homeName), null);
+            getHomeYaml(player).set(getPitchXPath(homeName), null);
+            getHomeYaml(player).set(getWorldXPath(homeName), null);
+            getHomeYaml(player).set("Homes."+homeName, null);
+            saveHomesFile(player);
+            if (SetHome.getInstance().configUtils.CMD_DELETEHOME_MESSAGE_SHOW)
+                SetHome.getInstance().messageUtils.displayMessage(player, MessageUtils.MESSAGE_TYPE.CMD_DELETEHOME, null);
+        } else {
+            String msg = "[SetHome] Invalid storage-type in config: '" + storageType + "'. Supported: yaml, sqlite, mysql.";
+            getLogger().severe(msg);
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + msg);
+            }
+        }
     }
 
     private void saveHomesFile(Player player) {

@@ -13,6 +13,10 @@ public class MySQLUtils {
     private final String username;
     private final String password;
 
+    public Connection getConnection() {
+        return connection;
+    }
+
     public MySQLUtils(String host, int port, String database, String username, String password) {
         this.host = host;
         this.port = port;
