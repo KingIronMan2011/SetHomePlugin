@@ -10,7 +10,7 @@
 - [x] Add home invite/teleport-to-other-player’s home feature
 - [x] Add backup and restore for home data
 - [x] Add metrics/usage statistics (bStats integration)
-- [ ] Add in-game admin commands for managing other players’ homes
+- [x] Add in-game admin commands for managing other players’ homes
 - [ ] Add configurable limits per permission group (e.g., VIPs get more homes)
 - [ ] Add API for other plugins to interact with SetHome
 - [ ] Add web-based or GUI home management (e.g., via a web panel or map)

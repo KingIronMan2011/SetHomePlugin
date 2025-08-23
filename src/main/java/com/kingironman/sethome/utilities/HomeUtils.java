@@ -349,6 +349,74 @@ public class HomeUtils {
     }
 
     /**
+     * Set or update a player's home at a specific location (used by admin commands).
+     * @param player target player
+     * @param homeName home name
+     * @param loc location to store
+     */
+    public void setPlayerHomeAtLocation(Player player, String homeName, Location loc) {
+        int maxHomes = SetHome.getInstance().configUtils.MAX_HOMES_PER_PLAYER;
+        List<String> homeNames = getHomeNames(player);
+        if (maxHomes > 0 && !homeNames.contains(homeName) && homeNames.size() >= maxHomes) {
+            Map<String, String> params = new HashMap<>();
+            params.put("max", String.valueOf(maxHomes));
+            // Notify admin who called this; caller should send messages itself.
+            return;
+        }
+        if (storageType.equalsIgnoreCase("sqlite")) {
+            try {
+                sqliteUtils.connect();
+                java.sql.PreparedStatement ps = sqliteUtils.getConnection().prepareStatement(
+                        "INSERT OR REPLACE INTO homes (uuid, home_name, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                ps.setString(1, player.getUniqueId().toString());
+                ps.setString(2, homeName);
+                ps.setString(3, loc.getWorld().getName());
+                ps.setDouble(4, loc.getX());
+                ps.setDouble(5, loc.getY());
+                ps.setDouble(6, loc.getZ());
+                ps.setFloat(7, loc.getYaw());
+                ps.setFloat(8, loc.getPitch());
+                ps.executeUpdate();
+                ps.close();
+            } catch (Exception e) {
+                getLogger().severe("SQLite setPlayerHomeAtLocation error: " + e.getMessage());
+            }
+        } else if (storageType.equalsIgnoreCase("mysql")) {
+            try {
+                mysqlUtils.connect();
+                java.sql.PreparedStatement ps = mysqlUtils.getConnection().prepareStatement(
+                        "REPLACE INTO homes (uuid, home_name, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                ps.setString(1, player.getUniqueId().toString());
+                ps.setString(2, homeName);
+                ps.setString(3, loc.getWorld().getName());
+                ps.setDouble(4, loc.getX());
+                ps.setDouble(5, loc.getY());
+                ps.setDouble(6, loc.getZ());
+                ps.setFloat(7, loc.getYaw());
+                ps.setFloat(8, loc.getPitch());
+                ps.executeUpdate();
+                ps.close();
+            } catch (Exception e) {
+                getLogger().severe("MySQL setPlayerHomeAtLocation error: " + e.getMessage());
+            }
+        } else if (storageType.equalsIgnoreCase("yaml")) {
+            getHomeYaml(player).set(getXPath(homeName), loc.getX());
+            getHomeYaml(player).set(getYPath(homeName), loc.getY());
+            getHomeYaml(player).set(getZPath(homeName), loc.getZ());
+            getHomeYaml(player).set(getYawXPath(homeName), loc.getYaw());
+            getHomeYaml(player).set(getPitchXPath(homeName), loc.getPitch());
+            getHomeYaml(player).set(getWorldXPath(homeName), loc.getWorld().getName());
+            saveHomesFile(player);
+        } else {
+            String msg = "[SetHome] Invalid storage-type in config: '" + storageType + "'. Supported: yaml, sqlite, mysql.";
+            getLogger().severe(msg);
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + msg);
+            }
+        }
+    }
+
+    /**
      * Get the Location object for a player's home.
      * @param player The player
      * @param homeName The home name
