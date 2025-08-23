@@ -20,7 +20,7 @@ public class CommandAutoComplete implements TabCompleter {
 		String cmd = command.getName().toLowerCase();
 
 		if (cmd.equals("shp")) {
-			List<String> subcommands = Arrays.asList("help", "backup", "restore", "home");
+			List<String> subcommands = Arrays.asList("help", "backup", "restore", "home", "import");
 			if (args.length == 1) {
 				List<String> completions = new ArrayList<>();
 				String prefix = args[0].toLowerCase();
@@ -44,6 +44,34 @@ public class CommandAutoComplete implements TabCompleter {
 					}
 				}
 				String prefix = args[1].toLowerCase();
+				List<String> completions = new ArrayList<>();
+				for (String f : files) if (f.toLowerCase().startsWith(prefix)) completions.add(f);
+				Collections.sort(completions);
+				return completions;
+			}
+
+			// /shp import <type> <file>
+			if (args.length == 2 && args[0].equalsIgnoreCase("import")) {
+				// suggest import types
+				if (!player.isOp()) return Collections.emptyList();
+				List<String> types = Arrays.asList("essentials");
+				String prefix = args[1].toLowerCase();
+				List<String> matches = new ArrayList<>();
+				for (String t : types) if (t.startsWith(prefix)) matches.add(t);
+				return matches;
+			}
+
+			if (args.length == 3 && args[0].equalsIgnoreCase("import")) {
+				// suggest files in plugin data folder (yml files)
+				if (!player.isOp()) return Collections.emptyList();
+				File dataDir = SetHome.getInstance().getDataFolder();
+				List<String> files = new ArrayList<>();
+				if (dataDir != null && dataDir.exists() && dataDir.isDirectory()) {
+					for (File f : dataDir.listFiles()) {
+						if (f.isFile() && f.getName().toLowerCase().endsWith(".yml")) files.add(f.getName());
+					}
+				}
+				String prefix = args[2].toLowerCase();
 				List<String> completions = new ArrayList<>();
 				for (String f : files) if (f.toLowerCase().startsWith(prefix)) completions.add(f);
 				Collections.sort(completions);

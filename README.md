@@ -89,7 +89,7 @@ On first startup the plugin will migrate and create missing language keys automa
 | /deletehome  | Delete your home           |
 | /listhome    | List all your homes        |
 | /shp help    | Lists all commands         |
-| `/shp import <type> <file>` | Import homes from another plugin export (admin only) |
+| /shp import `type` `file` | Import homes from another plugin export (admin only) |
 
 ---
 
