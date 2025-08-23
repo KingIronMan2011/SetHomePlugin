@@ -1,8 +1,6 @@
 
 # SetHome Plugin
 
-![SetHome Screenshot](https://i.imgur.com/GK3eEFD.png)
-
 ## About
 
 SetHome is a lightweight, modern Minecraft plugin for Spigot servers that lets players set, teleport to, delete, and list their homes. It is highly configurable, supports multiple storage backends, and is designed for ease of use and server performance.
@@ -47,11 +45,36 @@ extra:
 
 ---
 
+## 🏗️ Building & Installing
+
+Build the plugin with Java 17. From the project root you can use Gradle or the wrapper if present.
+
+PowerShell (recommended on Windows):
+
+```powershell
+# if you have the Gradle wrapper
+.\gradlew.bat clean build
+# or with system Gradle
+gradle clean build
+```
+
+After building, copy the generated JAR from `build/libs/` (or `target/` for Maven users) into your server's `plugins/` folder and start the server.
+
+---
+
 ## 🗂️ Storage Backends
 
 - **YAML** (default): Each player's homes are stored in a separate file in `plugins/SetHome/homes/`.
 - **SQLite**: Homes are stored in a local SQLite database file.
 - **MySQL**: Homes are stored in a remote or local MySQL database (see config example above).
+
+---
+
+## 🌐 Localization
+
+The plugin supports multiple language files under `plugins/SetHome/languages/` at runtime. To change the language set `extra.language` in `config.yml` (for example `extra.language: fr`).
+
+On first startup the plugin will migrate and create missing language keys automatically. If you add or update language files in `src/main/resources/languages/`, copy them to `plugins/SetHome/languages/` to customize messages.
 
 ---
 
@@ -63,6 +86,20 @@ extra:
 | /home        | Teleport to your home      |
 | /deletehome  | Delete your home           |
 | /listhome    | List all your homes        |
+| /shp help    | Lists all commands         |
+
+---
+
+## 💾 Backup & Restore
+
+Use these commands from the server console or in-game (requires appropriate permission):
+
+```text
+/sethome backup              # creates a backup file under plugins/SetHome/backups/
+/sethome restore <filename>  # restores homes from a backup file
+```
+
+Backups include YAML and SQLite data where applicable. For MySQL consider using a database dump tool for full exports.
 
 ---
 
