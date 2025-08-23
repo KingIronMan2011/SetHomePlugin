@@ -13,5 +13,5 @@
 - [x] Add in-game admin commands for managing other players’ homes
 - [x] Add API for other plugins to interact with SetHome
 - [ ] Add web-based or GUI home management (e.g., via a web panel or map)
-- [ ] Add migration/import from other home plugins
+- [x] Add migration/import from other home plugins
 - [x] Add more robust error handling and logging

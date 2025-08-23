@@ -3,6 +3,8 @@ package com.kingironman.sethome.commands;
 import com.kingironman.sethome.SetHome;
 import com.kingironman.sethome.utilities.BackupUtils;
 import com.kingironman.sethome.utilities.LoggingUtils;
+import com.kingironman.sethome.converters.OtherPluginImporter;
+import java.io.File;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -57,6 +59,31 @@ public class ShpCommand implements CommandExecutor {
             } catch (Exception e) {
                 LoggingUtils.error("Restore failed", e);
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cRestore failed: An error occurred. See server logs."));
+            }
+            return true;
+        }
+        if (args[0].equalsIgnoreCase("import")) {
+            if (!sender.isOp()) {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou must be OP to use this command."));
+                return true;
+            }
+            if (args.length < 3) {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cUsage: /shp import <type> <file>"));
+                return true;
+            }
+            String type = args[1].toLowerCase();
+            String filename = args[2];
+            File f = new File(SetHome.getInstance().getDataFolder(), filename);
+            try {
+                if (type.equals("essentials")) {
+                    int imported = OtherPluginImporter.importEssentialsYaml(f);
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aImported &e" + imported + " &ahomes from &e" + filename));
+                } else {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cUnknown import type: &e" + type));
+                }
+            } catch (Exception e) {
+                LoggingUtils.error("Import failed", e);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cImport failed: An error occurred. See server logs."));
             }
             return true;
         }
